@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+vods/
+clips/
+*.mp4
+*.mkv
+chat*.json
+client_secret*.json
+token*.json
+.env
