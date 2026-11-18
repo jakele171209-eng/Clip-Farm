@@ -186,6 +186,16 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
     if sp.get("orbit"):
         paste_scaled(frame, art.orbit(gt), W / 2, 1180, 1.0)
 
+    if sp.get("lamps"):
+        a, b = sp["lamps"]
+        paste_scaled(frame, art.lamps(tuple(a), tuple(b), gt), W / 2, 610, 1.0)
+
+    if sp.get("shrimp"):
+        sx = sp["shrimp"].get("x", 0.5) if isinstance(sp["shrimp"], dict) else 0.5
+        img = art.shrimp()
+        bob = math.sin(gt * 2.5) * 12
+        frame.alpha_composite(img, (int(W * sx - img.width / 2), int(1260 + bob)))
+
     if sp.get("fire"):
         paste_scaled(frame, art.fire(gt), W / 2, 1460, 1.0)
 

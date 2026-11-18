@@ -1,0 +1,118 @@
+{
+  "title": "What if you had the eyes of a mantis shrimp?",
+  "voice": "am_michael",
+  "speed": 1.12,
+  "sources": [
+    "National Geographic, 'The mantis shrimp sees like a satellite' (Ed Yong, 2014): https://www.nationalgeographic.com/science/article/the-mantis-shrimp-sees-like-a-satellite",
+    "Mapping Ignorance, 'Mantis shrimps (part 2): lords of colour (or perhaps not)': https://mappingignorance.org/2014/03/24/mantis-shrimps-part-2-lords-colour-perhaps/",
+    "Thoen, How, Chiou & Marshall (2014), Science 343(6169): 411-413"
+  ],
+  "shots": [
+    {
+      "text": "You wake up with the eyes of a mantis shrimp. They have 12 types of color receptors. You had 3.",
+      "say": "You wake up with the eyes of a mantis shrimp. They have twelve types of colour receptors. You had three.",
+      "scene": "reef",
+      "kicker": "WHAT IF",
+      "label": {"text": "3 COLOR RECEPTORS  →  12", "color": "dark"},
+      "cast": [{"who": "hero_shrimp", "x": 0.5, "mood": "shock", "scale": 1.15}]
+    },
+    {
+      "text": "By the end of today, you'll lose a color test to a regular human.",
+      "scene": "lab",
+      "kicker": "LATER TODAY",
+      "label": {"text": "COLOR TEST: FAILED", "color": "red"},
+      "cast": [
+        {"who": "hero_shrimp", "x": 0.3, "mood": "awkward"},
+        {"who": "scientist", "x": 0.72, "mood": "flat"}
+      ]
+    },
+    {
+      "text": "But first, the upgrades. Four of your new receptors see ultraviolet.",
+      "say": "But first, the upgrades. Four of your new receptors see ultra-violet.",
+      "scene": "reef",
+      "label": {"text": "ULTRAVIOLET: UNLOCKED", "color": "gold"},
+      "shrimp": {"x": 0.72},
+      "cast": [{"who": "hero_shrimp", "x": 0.3, "mood": "happy"}]
+    },
+    {
+      "text": "You can even see a spiralling kind of light that, as far as we know, no other animal can.",
+      "scene": "reef",
+      "label": {"text": "SPIRAL LIGHT: UNLOCKED", "color": "gold"},
+      "shrimp": {"x": 0.72},
+      "cast": [{"who": "hero_shrimp", "x": 0.3, "mood": "smug"}]
+    },
+    {
+      "text": "Four times the receptors. So colors must look four times better, right?",
+      "scene": "mind",
+      "card": {"title": "YOUR EYES NOW", "rows": [["Color receptors", "12", "good"], ["Ultraviolet", "YES", "good"], ["Spiral light", "YES", "good"]]},
+      "cast": [{"who": "hero_shrimp", "x": 0.5, "mood": "smug", "scale": 1.0}]
+    },
+    {
+      "text": "Scientists actually tested this on real mantis shrimp. Two lights. Pick the right color, get a snack.",
+      "scene": "lab",
+      "label": {"text": "THE EXPERIMENT", "color": "dark"},
+      "lamps": [[120, 200, 120], [150, 205, 110]],
+      "cast": [
+        {"who": "hero_shrimp", "x": 0.25, "mood": "calm"},
+        {"who": "scientist", "x": 0.75, "mood": "calm"}
+      ]
+    },
+    {
+      "text": "A normal human can tell two colors apart when they're just 5 nanometres different.",
+      "say": "A normal human can tell two colours apart when they're just five nanometres different.",
+      "scene": "mind",
+      "card": {"title": "SMALLEST COLOR GAP", "rows": [["Normal human", "5 nm", "good"]]},
+      "cast": [{"who": "scientist", "x": 0.5, "mood": "calm", "scale": 1.0}]
+    },
+    {
+      "text": "Mantis shrimp eyes? They need 15 to 25.",
+      "say": "Mantis shrimp eyes? They need fifteen to twenty-five.",
+      "scene": "mind",
+      "card": {"title": "SMALLEST COLOR GAP", "rows": [["Normal human", "5 nm", "good"], ["You, with shrimp eyes", "15–25 nm", "bad"]]},
+      "cast": [{"who": "hero_shrimp", "x": 0.5, "mood": "shock", "scale": 1.0}]
+    },
+    {
+      "text": "More receptors, but worse at telling colors apart. Why?",
+      "scene": "lab",
+      "label": {"text": "12 RECEPTORS, WORSE VISION?", "color": "red"},
+      "lamps": [[120, 200, 120], [150, 205, 110]],
+      "cast": [{"who": "hero_shrimp", "x": 0.5, "mood": "worried"}]
+    },
+    {
+      "text": "Your human brain compares three signals to blend millions of shades. That takes work, but it's precise.",
+      "scene": "mind",
+      "card": {"title": "HUMAN EYES", "rows": [["3 signals", "COMPARE", "good"], ["Millions of shades", "PRECISE", "good"]]},
+      "cast": [{"who": "scientist", "x": 0.5, "mood": "smug", "scale": 1.0}]
+    },
+    {
+      "text": "Scientists think shrimp eyes skip the comparing. Each receptor just shouts its own color. Fast, but blunt.",
+      "scene": "mind",
+      "card": {"title": "SHRIMP EYES", "rows": [["12 signals", "NO COMPARE", "bad"], ["Speed", "INSTANT", "good"], ["Fine detail", "BLURRY", "bad"]]},
+      "cast": [{"who": "hero_shrimp", "x": 0.5, "mood": "awkward", "scale": 1.0}]
+    },
+    {
+      "text": "Perfect for a shrimp that has to spot dinner and punch it, fast.",
+      "scene": "reef",
+      "label": {"text": "BUILT FOR SPEED", "color": "gold"},
+      "shrimp": {"x": 0.5},
+      "cast": []
+    },
+    {
+      "text": "Useless for you. You got twelve color receptors, and you still can't pick the right paint.",
+      "scene": "lab",
+      "label": {"text": "UPGRADE STATUS: DOWNGRADE", "color": "red"},
+      "lamps": [[120, 200, 120], [150, 205, 110]],
+      "cast": [
+        {"who": "hero_shrimp", "x": 0.3, "mood": "awkward"},
+        {"who": "scientist", "x": 0.72, "mood": "happy"}
+      ]
+    },
+    {
+      "text": "Which animal's sense would you steal instead? Tell me below.",
+      "scene": "reef",
+      "label": {"text": "YOUR TURN", "color": "gold"},
+      "shrimp": {"x": 0.75},
+      "cast": [{"who": "hero_shrimp", "x": 0.3, "mood": "happy", "scale": 1.1}]
+    }
+  ]
+}

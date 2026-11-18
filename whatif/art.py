@@ -117,6 +117,10 @@ def background(scene: str) -> Image.Image:
             r = rnd.uniform(2, 5) * SS
             d.ellipse([x - r, y - r, x + r, y + r], fill=(120, 110, 200))
         return _down(img)
+    if scene == "reef":
+        return _down(_reef(bw, bh))
+    if scene == "lab":
+        return _down(_lab(bw, bh))
 
     p = PALETTES[scene]
     img = _gradient((bw, bh), *p["sky"])
@@ -198,6 +202,8 @@ def fire(t: float) -> Image.Image:
 LOOKS = {
     # coat, hat, skin, hat style, hair
     "hero": dict(coat=(36, 150, 140), hat=(240, 110, 40), skin=(242, 200, 160), hat_style="toque", hair=None),
+    "hero_shrimp": dict(coat=(36, 150, 140), hat=(240, 110, 40), skin=(242, 200, 160), hat_style="toque", hair=None),
+    "scientist": dict(coat=(246, 248, 250), hat=None, skin=(214, 168, 130), hat_style=None, hair=(70, 50, 40)),
     "sailor": dict(coat=(120, 92, 70), hat=(70, 80, 100), skin=(236, 196, 160), hat_style="cap", hair=None),
     "sailor2": dict(coat=(90, 96, 112), hat=(150, 50, 50), skin=(222, 178, 140), hat_style="cap", hair=None),
     "guide": dict(coat=(176, 128, 84), hat=None, skin=(196, 140, 100), hat_style=None, hair=(40, 30, 26)),
@@ -232,7 +238,7 @@ def character(who: str, mood: str, blink: bool = False, scale: float = 1.0) -> I
             x = cx - 100 * SS + k * 25 * SS
             d.line([(x, 470 * SS), (x, 500 * SS)], fill=trim, width=5 * SS)
         d.line([(cx - 110 * SS, 466 * SS), (cx + 110 * SS, 466 * SS)], fill=trim, width=6 * SS)
-    if who == "hero":  # zipper + collar
+    if who in ("hero", "hero_shrimp"):  # zipper + collar
         d.line([(cx, 300 * SS), (cx, 550 * SS)], fill=_lerp(coat, (0, 0, 0), 0.25), width=6 * SS)
     # head
     hr = 120 * SS
@@ -251,8 +257,16 @@ def character(who: str, mood: str, blink: bool = False, scale: float = 1.0) -> I
     # face
     ex, ey, er = 44 * SS, hy + 10 * SS, 22 * SS
     ink = (34, 30, 40)
+    if who == "scientist":
+        for sx in (-1, 1):
+            d.ellipse([cx + sx * ex - 36 * SS, ey - 32 * SS, cx + sx * ex + 36 * SS, ey + 32 * SS], outline=(40, 40, 50), width=6 * SS)
+        d.line([(cx - ex + 36 * SS, ey), (cx + ex - 36 * SS, ey)], fill=(40, 40, 50), width=6 * SS)
+    if who == "scientist":  # glasses + coat lapels
+        d.line([(cx - 40 * SS, 300 * SS), (cx, 380 * SS), (cx + 40 * SS, 300 * SS)], fill=(190, 196, 206), width=8 * SS)
     for sx in (-1, 1):
         x = cx + sx * ex
+        if who == "hero_shrimp":  # stalk eyes are drawn after, on a taller canvas
+            continue
         if blink or mood in ("happy", "smug"):
             if mood == "happy" and not blink:
                 d.arc([x - er, ey - er * 0.6, x + er, ey + er * 1.2], 200, 340, fill=ink, width=7 * SS)
@@ -266,7 +280,9 @@ def character(who: str, mood: str, blink: bool = False, scale: float = 1.0) -> I
             d.ellipse([x - er * 0.3, ey - er * 0.7, x + er * 0.05, ey - er * 0.3], fill=(255, 255, 255))
     # brows
     by = ey - 42 * SS
-    if mood in ("worried", "sick", "cold", "awkward"):
+    if who == "hero_shrimp":
+        pass
+    elif mood in ("worried", "sick", "cold", "awkward"):
         d.line([(cx - ex - 24 * SS, by), (cx - ex + 20 * SS, by - 14 * SS)], fill=ink, width=7 * SS)
         d.line([(cx + ex - 20 * SS, by - 14 * SS), (cx + ex + 24 * SS, by)], fill=ink, width=7 * SS)
     elif mood == "smug":
@@ -290,6 +306,22 @@ def character(who: str, mood: str, blink: bool = False, scale: float = 1.0) -> I
         d.ellipse([cx + hr * 0.75, hy - 40 * SS, cx + hr * 0.75 + 26 * SS, hy - 4 * SS], fill=(150, 210, 250))
     if mood == "cold":  # breath puff
         d.ellipse([cx + 60 * SS, my - 10 * SS, cx + 110 * SS, my + 30 * SS], fill=(255, 255, 255, 170))
+    if who == "hero_shrimp":  # eyes on stalks poking out of the toque
+        oy = 170 * SS
+        big = Image.new("RGBA", (cw, ch + oy), (0, 0, 0, 0))
+        bd = ImageDraw.Draw(big)
+        top = hy - hr + oy
+        for sx in (-1, 1):
+            tipx, tipy = cx + sx * 80 * SS, top - 120 * SS
+            bd.line([(cx + sx * 30 * SS, top + 30 * SS), (tipx, tipy)], fill=(60, 190, 120), width=14 * SS)
+            bd.ellipse([tipx - 44 * SS, tipy - 32 * SS, tipx + 44 * SS, tipy + 32 * SS], fill=(60, 70, 90))
+            if not blink:
+                bd.rectangle([tipx - 44 * SS, tipy - 6 * SS, tipx + 44 * SS, tipy + 6 * SS], fill=(250, 220, 90))
+                bd.ellipse([tipx - 12 * SS, tipy - 22 * SS, tipx + 4 * SS, tipy - 8 * SS], fill=(255, 255, 255))
+            else:
+                bd.line([(tipx - 40 * SS, tipy), (tipx + 40 * SS, tipy)], fill=(250, 220, 90), width=6 * SS)
+        big.alpha_composite(img, (0, oy))
+        img = big
     out = _down(img)
     if scale != 1.0:
         out = out.resize((int(out.width * scale), int(out.height * scale)), Image.LANCZOS)
@@ -326,11 +358,12 @@ def card(title: str, rows, shown: int, alert=None) -> Image.Image:
     d.rectangle([0, 80 * SS, cw, 120 * SS], fill=(255, 196, 54))
     d.text((44 * SS, 60 * SS), title, font=font(52 * SS), fill=(40, 26, 0), anchor="lm")
     d.ellipse([cw - 80 * SS, 34 * SS, cw - 30 * SS, 84 * SS], fill=(222, 54, 54))  # pin
-    for i, (txt, tag) in enumerate(rows[:shown]):
+    for i, row in enumerate(rows[:shown]):
+        txt, tag = row[0], row[1]
         y = 150 * SS + i * row_h
         d.rounded_rectangle([30 * SS, y, cw - 30 * SS, y + row_h - 18 * SS], radius=18 * SS, fill=(255, 255, 255))
         d.text((60 * SS, y + (row_h - 18 * SS) / 2), txt, font=font(42 * SS, "semi"), fill=(30, 30, 40), anchor="lm")
-        good = tag.upper() in ("YES", "KNOWN", "OK")
+        good = row[2] == "good" if len(row) > 2 else tag.upper() in ("YES", "KNOWN", "OK")
         tcol = (30, 150, 90) if good else (210, 50, 50)
         d.text((cw - 60 * SS, y + (row_h - 18 * SS) / 2), tag.upper(), font=font(36 * SS), fill=tcol, anchor="rm")
     if alert and shown > len(rows):
@@ -361,3 +394,112 @@ def orbit(t: float) -> Image.Image:
         d.rounded_rectangle([x - tw / 2 - 22 * SS, y - 34 * SS, x + tw / 2 + 22 * SS, y + 34 * SS], radius=34 * SS, fill=col)
         d.text((x, y), lab, font=f, fill=(20, 20, 30), anchor="mm")
     return _down(img)
+
+
+# ---------------------------------------------------------------- science scenes
+
+def _reef(bw, bh):
+    img = _gradient((bw, bh), (40, 150, 200), (8, 40, 90))
+    rays = Image.new("L", (bw, bh), 0)
+    rd = ImageDraw.Draw(rays)
+    for k in range(7):
+        x = bw * (0.05 + k * 0.15)
+        rd.polygon([(x, 0), (x + 90 * SS, 0), (x + 380 * SS, bh * 0.75), (x + 200 * SS, bh * 0.75)], fill=40)
+    rays = rays.filter(ImageFilter.GaussianBlur(30 * SS))
+    img.paste((200, 240, 255), (0, 0), rays)
+    d = ImageDraw.Draw(img)
+    rnd = random.Random(11)
+    floor = bh * 0.68
+    pts = [(0, bh)] + [(bw * k / 30, floor + math.sin(k * 0.7) * 30 * SS) for k in range(31)] + [(bw, bh)]
+    d.polygon(pts, fill=(226, 196, 140))
+    for k in range(14):  # coral
+        x = rnd.uniform(0, bw)
+        col = rnd.choice([(250, 110, 120), (255, 170, 80), (180, 110, 220), (90, 200, 170)])
+        h = rnd.uniform(140, 300) * SS
+        base = floor + rnd.uniform(-10, 40) * SS
+        for b in range(5):
+            ang = -math.pi / 2 + (b - 2) * 0.35
+            x2, y2 = x + math.cos(ang) * h * 0.8, base + math.sin(ang) * h
+            d.line([(x, base), (x2, y2)], fill=col, width=int(26 * SS))
+            d.ellipse([x2 - 18 * SS, y2 - 18 * SS, x2 + 18 * SS, y2 + 18 * SS], fill=col)
+    for k in range(10):  # seaweed
+        x = rnd.uniform(0, bw)
+        base = floor + rnd.uniform(0, 60) * SS
+        pts = [(x + math.sin(i * 0.8) * 26 * SS, base - i * 40 * SS) for i in range(9)]
+        d.line(pts, fill=(50, 140, 90), width=int(20 * SS), joint="curve")
+    for k in range(40):  # bubbles
+        x, y = rnd.uniform(0, bw), rnd.uniform(0, floor)
+        r = rnd.uniform(5, 16) * SS
+        d.ellipse([x - r, y - r, x + r, y + r], outline=(220, 245, 255), width=int(3 * SS))
+    return img
+
+
+def _lab(bw, bh):
+    img = _gradient((bw, bh), (232, 238, 244), (206, 216, 228))
+    d = ImageDraw.Draw(img)
+    floor = bh * 0.66
+    d.rectangle([0, floor, bw, bh], fill=(176, 188, 204))
+    for k in range(12):  # floor tiles
+        x = bw * k / 12
+        d.line([(x, floor), (x - 200 * SS, bh)], fill=(160, 172, 190), width=int(4 * SS))
+    # wall shelves with flasks
+    for row in (0.34, 0.46):
+        y = bh * row
+        d.rectangle([bw * 0.08, y, bw * 0.92, y + 16 * SS], fill=(150, 160, 176))
+        rnd = random.Random(int(row * 100))
+        for k in range(9):
+            x = bw * (0.12 + k * 0.09)
+            col = rnd.choice([(120, 200, 255), (255, 140, 160), (160, 230, 150), (255, 210, 110)])
+            d.rectangle([x - 14 * SS, y - 90 * SS, x + 14 * SS, y - 50 * SS], fill=(214, 226, 236))
+            d.polygon([(x - 14 * SS, y - 50 * SS), (x + 14 * SS, y - 50 * SS), (x + 44 * SS, y), (x - 44 * SS, y)], fill=col)
+    # bench
+    d.rectangle([bw * 0.04, floor + 40 * SS, bw * 0.96, floor + 80 * SS], fill=(90, 100, 120))
+    return img
+
+
+def lamps(left_col, right_col, t: float) -> Image.Image:
+    """Two light boxes on a stand, for the colour test."""
+    s = 2
+    w, h = 900 * s, 360 * s
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    for i, col in enumerate((left_col, right_col)):
+        cx = w * (0.27 + i * 0.46)
+        glow = Image.new("L", (w, h), 0)
+        ImageDraw.Draw(glow).ellipse([cx - 170 * s, 20 * s, cx + 170 * s, 300 * s], fill=int(110 + 30 * math.sin(t * 4 + i)))
+        glow = glow.filter(ImageFilter.GaussianBlur(40 * s))
+        layer = Image.new("RGBA", (w, h), col + (0,))
+        layer.putalpha(glow)
+        img.alpha_composite(layer)
+        d.rounded_rectangle([cx - 100 * s, 70 * s, cx + 100 * s, 250 * s], radius=30 * s, fill=(40, 44, 56))
+        d.ellipse([cx - 70 * s, 90 * s, cx + 70 * s, 230 * s], fill=col)
+        d.rectangle([cx - 12 * s, 250 * s, cx + 12 * s, 340 * s], fill=(70, 76, 90))
+    return img.resize((w // s, h // s), Image.LANCZOS)
+
+
+@lru_cache(maxsize=8)
+def shrimp(flip: bool = False) -> Image.Image:
+    """A cartoon mantis shrimp: striped body, stalked eyes, folded punching club."""
+    w, h = 640 * SS, 360 * SS
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    cols = [(60, 190, 120), (40, 160, 200), (250, 120, 60), (230, 70, 90), (250, 200, 60), (140, 90, 220)]
+    for k in range(6):  # body segments, tail on the left
+        x = 120 * SS + k * 70 * SS
+        r = (60 + k * 6) * SS
+        d.ellipse([x - r, 200 * SS - r * 0.8, x + r, 200 * SS + r * 0.8], fill=cols[k])
+    d.polygon([(40 * SS, 200 * SS), (110 * SS, 150 * SS), (110 * SS, 250 * SS)], fill=(250, 120, 60))  # tail fan
+    for k in range(5):  # legs
+        x = 170 * SS + k * 60 * SS
+        d.line([(x, 250 * SS), (x - 20 * SS, 300 * SS)], fill=(230, 70, 90), width=int(10 * SS))
+    # club
+    d.line([(520 * SS, 220 * SS), (560 * SS, 290 * SS), (600 * SS, 250 * SS)], fill=(240, 90, 110), width=int(22 * SS), joint="curve")
+    d.ellipse([580 * SS, 228 * SS, 625 * SS, 273 * SS], fill=(255, 140, 150))
+    # eyes on stalks
+    for ex, ey in ((500 * SS, 70 * SS), (560 * SS, 60 * SS)):
+        d.line([(500 * SS, 170 * SS), (ex, ey + 30 * SS)], fill=(60, 190, 120), width=int(14 * SS))
+        d.ellipse([ex - 34 * SS, ey - 26 * SS, ex + 34 * SS, ey + 26 * SS], fill=(60, 70, 90))
+        d.rectangle([ex - 34 * SS, ey - 5 * SS, ex + 34 * SS, ey + 5 * SS], fill=(250, 220, 90))
+        d.ellipse([ex - 8 * SS, ey - 14 * SS, ex + 4 * SS, ey - 4 * SS], fill=(255, 255, 255))
+    out = _down(img)
+    return out.transpose(Image.FLIP_LEFT_RIGHT) if flip else out
