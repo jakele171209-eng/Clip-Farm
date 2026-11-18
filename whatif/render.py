@@ -25,6 +25,7 @@ class Shot:
     spec: dict
     start: float = 0.0
     dur: float = 0.0
+    countdown_at: float | None = None  # absolute time the on-screen countdown hits zero
     words: list = field(default_factory=list)  # (word, t0, t1) relative to shot start
 
 
@@ -360,6 +361,13 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
         lab = sp["label"]
         paste_scaled(frame, art.pill(lab["text"], lab.get("color", "dark"), 46), W / 2, 310, ease_pop((t - 0.08) / 0.22))
 
+    if sp.get("countdown") and shot.countdown_at is not None:
+        left = max(0.0, shot.countdown_at - gt)
+    if sp.get("countdown") and shot.countdown_at is not None and gt < shot.countdown_at + 0.5:
+        txt = f"LIGHTS OUT IN 00:{left:04.1f}"
+        img = art.pill(txt, "red" if left < 5 else "dark", 54)
+        paste_scaled(frame, img, W / 2, 440, 1.0 + (0.06 * math.sin(gt * 12) if left < 5 else 0))
+
     cap_y = (card_bottom + 110) if card_bottom else 820
     caption(frame, shot.words, t, cap_y)
     out = frame.convert("RGB")
@@ -390,6 +398,12 @@ def render(story_path: str, out_path: str, preview: float | None = None):
         voice_parts.append(audio)
         voice_parts.append(np.zeros(int(gap * SR), dtype=np.float32))
         t += sh.dur
+    for sh in shots:  # one countdown in the story, ending on the target shot's impact
+        if sh.spec.get("countdown_target"):
+            ti = impact_time(sh)
+            target = sh.start + (ti if ti is not None else 0)
+            for other in shots:
+                other.countdown_at = target
     total = t + 0.6
     if preview:
         total = min(total, preview)

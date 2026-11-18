@@ -12,10 +12,10 @@
   ],
   "shots": [
     {
-      "text": "At noon, the Sun disappears. For 8 minutes and 20 seconds, nobody on Earth will know.",
-      "say": "At noon, the Sun disappears. For eight minutes and twenty seconds... nobody on Earth will know.",
+      "text": "The Sun died 8 minutes ago.",
+      "say": "The Sun died eight minutes ago.",
       "scene": "park_day",
-      "kicker": "12:00:00",
+      "kicker": "LIVE",
       "label": {
         "text": "THE SUN: GONE",
         "color": "red"
@@ -24,7 +24,12 @@
         "x": 0.72,
         "y": 430
       },
-      "tick": true,
+      "impact": {
+        "word": "died",
+        "flash": "white",
+        "shake": 0.5
+      },
+      "countdown": true,
       "cast": [
         {
           "who": "hero",
@@ -35,11 +40,11 @@
       ]
     },
     {
-      "text": "You're in the park. Sun on your face. But that light left before the Sun vanished. You're feeling a ghost.",
+      "text": "You just don't know it yet. Its last light is still on its way to you. When it runs out, everything changes.",
       "scene": "park_day",
-      "kicker": "12:03:10",
+      "kicker": "12:08:00",
       "label": {
-        "text": "LIGHT FROM A DEAD SUN",
+        "text": "LAST LIGHT STILL ARRIVING",
         "color": "dark"
       },
       "sun": {
@@ -47,18 +52,19 @@
         "y": 430
       },
       "tick": true,
+      "countdown": true,
       "cast": [
         {
           "who": "hero",
           "x": 0.36,
-          "mood": "happy"
+          "mood": "calm"
         }
       ]
     },
     {
       "text": "Even gravity hasn't heard. It moves at light speed too. Earth keeps circling an empty spot.",
       "scene": "space",
-      "kicker": "12:06:00",
+      "kicker": "12:08:10",
       "label": {
         "text": "GRAVITY: DELAYED",
         "color": "dark"
@@ -68,7 +74,8 @@
         "y": 1150
       },
       "tick": true,
-      "cast": []
+      "cast": [],
+      "countdown": true
     },
     {
       "text": "12:08 and 20 seconds. The lights go out.",
@@ -96,7 +103,9 @@
           "mood": "shock",
           "scale": 1.1
         }
-      ]
+      ],
+      "countdown_target": true,
+      "countdown": true
     },
     {
       "text": "No sunset. Just off. The Moon goes black too. It was only ever a mirror.",
