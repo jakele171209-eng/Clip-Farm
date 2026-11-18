@@ -1,2 +1,6 @@
 yt-dlp
 faster-whisper
+pillow
+numpy
+kokoro-onnx
+soundfile

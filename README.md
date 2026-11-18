@@ -30,6 +30,21 @@ python -m clipfarm cut --video vods/vod.mp4 --moments moments.json --outdir clip
 
 Tune with `--pre` / `--post` (seconds before and after the peak), `--gap` (minimum seconds between clips) and `--min-score` (higher = only bigger spikes).
 
+## What-if animated shorts
+
+A second pipeline that makes original animated "what if" Shorts from a story file. No outside footage: backgrounds, characters, labels and music are all drawn or generated in code, and the voice is Kokoro, an open-weight TTS model (Apache-2.0) that runs offline.
+
+```bash
+# one-time: download the voice model (~120 MB) into ./models/
+curl -L -o models/kokoro-v1.0.int8.onnx https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.int8.onnx
+curl -L -o models/voices-v1.0.bin https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+
+# render a story to a 1080x1920 MP4
+python -m whatif stories/cartier-winter-1535.json out/cartier-winter-1535.mp4
+```
+
+A story is a list of shots. Each shot has the narration (`text`, plus `say` if the voice needs a different spelling), a `scene` (`ship_day`, `ship_night`, `spring`, `village`, `mind`), an optional top `label` pill, an optional checklist `card`, and the `cast` with each character's position and mood. Every story lists its fact `sources`.
+
 ## Tests
 
 ```bash

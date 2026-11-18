@@ -9,3 +9,5 @@ chat*.json
 client_secret*.json
 token*.json
 .env
+models/
+out/

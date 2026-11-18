@@ -1,0 +1,123 @@
+{
+  "title": "You wake up in Canada, 1535... with a modern brain",
+  "voice": "am_michael",
+  "speed": 1.15,
+  "sources": [
+    "Parks Canada, Cartier-Brebeuf NHS, 'Wintering (1535-1536)': https://parks.canada.ca/lhn-nhs/qc/cartierbrebeuf/culture/histoire-history/evenement-event/cartier/c"
+  ],
+  "shots": [
+    {
+      "text": "You wake up in Canada. The year is 1535. And your brain has everything modern medicine knows.",
+      "say": "You wake up in Canada. The year is fifteen thirty-five. And your brain has everything modern medicine knows.",
+      "scene": "ship_day",
+      "kicker": "WHAT IF",
+      "label": {"text": "QUÉBEC, 1535  +  A MODERN BRAIN", "color": "dark"},
+      "cast": [{"who": "hero", "x": 0.5, "mood": "shock", "scale": 1.25}],
+      "orbit": true
+    },
+    {
+      "text": "By spring, this whole crew will be saved by a cure. Just not yours.",
+      "say": "By spring, this whole crew will be saved by a cure. Just... not yours.",
+      "scene": "spring",
+      "kicker": "MAY 1536",
+      "label": {"text": "SAVED BY A CURE", "color": "gold"},
+      "cast": [
+        {"who": "sailor", "x": 0.2, "mood": "happy"},
+        {"who": "hero", "x": 0.5, "mood": "awkward"},
+        {"who": "sailor2", "x": 0.8, "mood": "happy"}
+      ]
+    },
+    {
+      "text": "Right now, you're one of 110 sailors with Jacques Cartier, frozen into the river.",
+      "say": "Right now, you're one of a hundred and ten sailors with Jacques Cartier, frozen into the river.",
+      "scene": "ship_night",
+      "label": {"text": "110 SAILORS  ·  FROZEN IN", "color": "dark"},
+      "cast": [
+        {"who": "sailor", "x": 0.22, "mood": "cold"},
+        {"who": "hero", "x": 0.5, "mood": "cold"},
+        {"who": "sailor2", "x": 0.78, "mood": "cold"}
+      ]
+    },
+    {
+      "text": "Tonight's menu? Salt meat. Dried meat. No fruit. No vegetables.",
+      "scene": "mind",
+      "card": {"title": "TONIGHT'S MENU", "rows": [["Salt meat", "YES"], ["Dried meat", "YES"], ["Fruit", "NO"], ["Vegetables", "NO"]]},
+      "cast": [{"who": "hero", "x": 0.5, "mood": "worried", "scale": 1.0}]
+    },
+    {
+      "text": "By February, almost every sailor is sick. Swollen gums. Bleeding. Weak legs.",
+      "scene": "ship_night",
+      "label": {"text": "FEBRUARY: ALMOST EVERYONE SICK", "color": "red"},
+      "cast": [
+        {"who": "sailor", "x": 0.2, "mood": "sick"},
+        {"who": "hero", "x": 0.5, "mood": "worried"},
+        {"who": "sailor2", "x": 0.8, "mood": "sick"}
+      ]
+    },
+    {
+      "text": "Your modern brain knows this one. It's scurvy. You're missing vitamin C.",
+      "scene": "mind",
+      "card": {"title": "MODERN BRAIN", "rows": [["Disease: scurvy", "KNOWN"], ["Cause: no vitamin C", "KNOWN"], ["Cure: oranges, lemons", "KNOWN"]]},
+      "cast": [{"who": "hero", "x": 0.5, "mood": "smug", "scale": 1.0}]
+    },
+    {
+      "text": "Small problem. The nearest orange is on the other side of the ocean.",
+      "scene": "mind",
+      "card": {"title": "MODERN BRAIN", "rows": [["Disease: scurvy", "KNOWN"], ["Cause: no vitamin C", "KNOWN"], ["Cure: oranges, lemons", "KNOWN"]], "alert": ["Oranges in stock: 0", "Nearest one: across the Atlantic"]},
+      "cast": [{"who": "hero", "x": 0.5, "mood": "shock", "scale": 1.0}]
+    },
+    {
+      "text": "Then Domagaya, from the village of Stadacona, tells Cartier about a remedy.",
+      "scene": "village",
+      "label": {"text": "STADACONA", "color": "dark"},
+      "cast": [
+        {"who": "hero", "x": 0.25, "mood": "worried"},
+        {"who": "guide", "x": 0.68, "mood": "calm"}
+      ]
+    },
+    {
+      "text": "Two women boil the bark and twigs of a tree called annedda into a tea.",
+      "scene": "village",
+      "label": {"text": "THE CURE: ANNEDDA TEA", "color": "gold"},
+      "fire": true,
+      "cast": [
+        {"who": "woman", "x": 0.28, "mood": "calm"},
+        {"who": "woman2", "x": 0.72, "mood": "calm"}
+      ]
+    },
+    {
+      "text": "Historians think it was eastern white cedar. The sick sailors drink it, and they start to recover.",
+      "scene": "ship_day",
+      "label": {"text": "SAILORS RECOVERING", "color": "gold"},
+      "cast": [
+        {"who": "sailor", "x": 0.2, "mood": "happy"},
+        {"who": "hero", "x": 0.5, "mood": "happy"},
+        {"who": "sailor2", "x": 0.8, "mood": "happy"}
+      ]
+    },
+    {
+      "text": "Twenty-five sailors had already died. The rest sailed home in May.",
+      "scene": "spring",
+      "label": {"text": "25 LOST  ·  THE REST SAILED HOME", "color": "dark"},
+      "cast": [{"who": "hero", "x": 0.5, "mood": "calm"}]
+    },
+    {
+      "text": "And your big contribution? You knew the name of the disease.",
+      "say": "And your big contribution? ... You knew the name of the disease.",
+      "scene": "spring",
+      "label": {"text": "YOUR CONTRIBUTION: THE NAME", "color": "red"},
+      "cast": [
+        {"who": "sailor", "x": 0.2, "mood": "flat"},
+        {"who": "hero", "x": 0.5, "mood": "awkward"},
+        {"who": "sailor2", "x": 0.8, "mood": "flat"}
+      ]
+    },
+    {
+      "text": "What would you bring back to 1535? Tell me below.",
+      "say": "What would you bring back to fifteen thirty-five? Tell me below.",
+      "scene": "mind",
+      "label": {"text": "YOUR TURN", "color": "gold"},
+      "cast": [{"who": "hero", "x": 0.5, "mood": "happy", "scale": 1.25}]
+    }
+  ]
+}
