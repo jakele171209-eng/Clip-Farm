@@ -67,7 +67,33 @@ def chunks(words, max_words=3, max_chars=15):
 
 # ------------------------------------------------------------------ audio
 
-def music_bed(seconds: float) -> np.ndarray:
+def music_bed(seconds: float, mood: str = "light") -> np.ndarray:
+    if mood == "tense":
+        return tense_bed(seconds)
+    return light_bed(seconds)
+
+
+def tense_bed(seconds: float) -> np.ndarray:
+    """Low drone + slow heartbeat pulse + a high shimmer. Original, generated."""
+    n = int(seconds * SR)
+    t = np.arange(n) / SR
+    drone = 0.05 * np.sin(2 * np.pi * 55 * t) + 0.03 * np.sin(2 * np.pi * 82.4 * t) + 0.02 * np.sin(2 * np.pi * 110.6 * t)
+    drone *= 0.7 + 0.3 * np.sin(2 * np.pi * 0.07 * t)
+    beat = np.zeros(n, dtype=np.float32)
+    period = 0.95
+    for k in range(int(seconds / period) + 1):
+        for off, amp in ((0.0, 1.0), (0.22, 0.6)):
+            i0 = int((k * period + off) * SR)
+            m = int(0.18 * SR)
+            if i0 + m >= n:
+                continue
+            pt = np.arange(m) / SR
+            beat[i0:i0 + m] += np.sin(2 * np.pi * 50 * pt) * np.exp(-pt * 25) * 0.16 * amp
+    shimmer = 0.008 * np.sin(2 * np.pi * 1318 * t) * (0.5 + 0.5 * np.sin(2 * np.pi * 0.11 * t))
+    return (drone + beat + shimmer).astype(np.float32)
+
+
+def light_bed(seconds: float) -> np.ndarray:
     """Original ambient pad + soft plucks, generated from sine waves (no licensing needed)."""
     n = int(seconds * SR)
     t = np.arange(n) / SR
@@ -131,6 +157,14 @@ def whoosh(at: float, buf: np.ndarray):
     noise = np.convolve(rng.standard_normal(m), np.ones(12) / 12, mode="same")
     env = np.sin(np.pi * pt / pt[-1]) ** 2
     buf[i0:i0 + m] += noise * env * 0.18
+
+
+def word_time(shot, word: str, default: float | None = None) -> float | None:
+    key = word.lower()
+    for w, t0, t1 in shot.words:
+        if re.sub(r"[^\w]", "", w.lower()) == key:
+            return t0
+    return default
 
 
 def impact_time(shot) -> float | None:
@@ -199,7 +233,12 @@ def caption(frame, words, t, y):
 def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
     sp = shot.spec
     prog = t / max(shot.dur, 0.01)
-    bg = art.background(sp["scene"])
+    scene = sp["scene"]
+    if "switch" in sp:
+        ts = word_time(shot, sp["switch"]["word"], shot.dur * 0.5)
+        if t < ts:
+            scene = sp["switch"]["from"]
+    bg = art.background(scene)
     z = 1.0 + 0.07 * prog + 0.07 * max(0.0, 1 - t / 0.18) ** 2  # quick punch-in on every cut
     ti = impact_time(shot)
     hit = ti is not None and t >= ti
@@ -235,6 +274,36 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
         img = art.shrimp()
         bob = math.sin(gt * 2.5) * 12
         frame.alpha_composite(img, (int(W * sx - img.width / 2), int(1260 + bob)))
+
+    if "sun" in sp:
+        off = word_time(shot, sp["sun"].get("off_word", ""), None)
+        if off is None or t < off:
+            paste_scaled(frame, art.sun_disc(1.0), W * sp["sun"].get("x", 0.72), sp["sun"].get("y", 420), 1.0)
+
+    if "star" in sp:  # a planet still shining, then going out
+        st = sp["star"]
+        off = word_time(shot, st.get("off_word", ""), None)
+        if off is None or t < off:
+            pulse = 1 + 0.15 * math.sin(gt * 5)
+            r = 22 * pulse
+            x, y = W * st.get("x", 0.3), st.get("y", 480)
+            glow = Image.new("RGBA", (200, 200), (0, 0, 0, 0))
+            ImageDraw.Draw(glow).ellipse([100 - r * 3, 100 - r * 3, 100 + r * 3, 100 + r * 3], fill=(255, 230, 180, 70))
+            ImageDraw.Draw(glow).ellipse([100 - r, 100 - r, 100 + r, 100 + r], fill=(255, 245, 220, 255))
+            frame.alpha_composite(glow, (int(x - 100), int(y - 100)))
+            if st.get("tag"):
+                tag = art.pill(st["tag"], "kicker", 26)
+                frame.alpha_composite(tag, (int(x - tag.width / 2), int(y + 40)))
+
+    if "earth" in sp:
+        e = art.earth(gt)
+        drift = sp["earth"].get("drift", 0) * t
+        ex, ey = W * sp["earth"].get("x", 0.35) + drift, sp["earth"].get("y", 1150)
+        if sp["earth"].get("drift"):
+            dd = ImageDraw.Draw(frame)
+            for k in range(1, 6):
+                dd.line([(ex - 200 - k * 60, ey - 60 + k * 24), (ex - 120 - k * 60, ey - 60 + k * 24)], fill=(160, 190, 255, 160), width=6)
+        frame.alpha_composite(e, (int(ex - e.width / 2), int(ey - e.height / 2)))
 
     if sp.get("speedlines"):
         frame.alpha_composite(art.speedlines(gt))
@@ -278,7 +347,7 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
         arm, pos = sp.pop("_arm")
         frame.alpha_composite(arm, pos)
 
-    if ti is not None and ti <= t <= ti + 0.6:
+    if ti is not None and ti <= t <= ti + 0.6 and sp["impact"].get("text"):
         imp = sp["impact"]
         k = (t - ti) / 0.6
         bx = W * imp.get("x", sp.get("prop", {}).get("x", 0.6))
@@ -296,11 +365,12 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
     out = frame.convert("RGB")
     if ti is not None and ti <= t <= ti + 0.35:  # screen shake + white flash
         k = 1 - (t - ti) / 0.35
-        amp = 34 * k
+        amp = 34 * k * sp["impact"].get("shake", 1.0)
         dx, dy = int(math.sin(t * 90) * amp), int(math.cos(t * 77) * amp)
         shaken = Image.new("RGB", (W, H), (255, 255, 255))
         shaken.paste(out, (dx, dy))
-        out = Image.blend(shaken, Image.new("RGB", (W, H), (255, 255, 255)), max(0.0, 0.55 * (k - 0.6) / 0.4))
+        fc = (0, 0, 0) if sp["impact"].get("flash") == "black" else (255, 255, 255)
+        out = Image.blend(shaken, Image.new("RGB", (W, H), fc), max(0.0, 0.55 * (k - 0.6) / 0.4))
     return out
 
 
@@ -328,9 +398,14 @@ def render(story_path: str, out_path: str, preview: float | None = None):
     n = int(total * SR)
     mix = np.zeros(n, dtype=np.float32)
     mix[: min(n, len(voice_track))] += voice_track[:n] * 0.95
-    mix += music_bed(total)[:n]
+    mix += music_bed(total, story.get("music", "light"))[:n]
     for sh in shots:
         whoosh(sh.start - 0.06, mix)
+        if sh.spec.get("tick"):
+            k = 0.0
+            while k < sh.dur:
+                pop(sh.start + k, mix, 2400)
+                k += 0.5
         ti = impact_time(sh)
         if ti is not None:
             boom(sh.start + ti, mix)

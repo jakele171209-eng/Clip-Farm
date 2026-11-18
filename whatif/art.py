@@ -121,6 +121,14 @@ def background(scene: str) -> Image.Image:
         return _down(_reef(bw, bh))
     if scene == "lab":
         return _down(_lab(bw, bh))
+    if scene in ("park_day", "park_dark", "park_frozen"):
+        return _down(_park(bw, bh, scene != "park_day", scene == "park_frozen"))
+    if scene == "space":
+        return _down(_space(bw, bh))
+    if scene == "ocean_cut":
+        return _down(_ocean_cut(bw, bh))
+    if scene == "cave":
+        return _down(_cave(bw, bh))
 
     p = PALETTES[scene]
     img = _gradient((bw, bh), *p["sky"])
@@ -600,4 +608,183 @@ def speedlines(t: float) -> Image.Image:
         cx, cy = W / 2, H * 0.62
         d.line([(cx + math.cos(a) * r0, cy + math.sin(a) * r0), (cx + math.cos(a) * 1500, cy + math.sin(a) * 1500)],
                fill=(255, 255, 255, 150), width=rnd.randint(3, 9))
+    return img
+
+
+# ---------------------------------------------------------------- story scenes: the Sun vanishes
+
+def _skyline(d, bw, base, col, windows=None, seed=5):
+    rnd = random.Random(seed)
+    x = 0
+    while x < bw:
+        w = rnd.uniform(90, 200) * SS
+        h = rnd.uniform(180, 520) * SS
+        d.rectangle([x, base - h, x + w, base], fill=col)
+        if windows:
+            for wy in range(int(base - h + 30 * SS), int(base - 30 * SS), int(46 * SS)):
+                for wx in range(int(x + 18 * SS), int(x + w - 30 * SS), int(40 * SS)):
+                    if rnd.random() < 0.55:
+                        d.rectangle([wx, wy, wx + 18 * SS, wy + 24 * SS], fill=windows)
+        x += w + rnd.uniform(6, 30) * SS
+
+
+def _park(bw, bh, dark: bool, frozen: bool = False):
+    if frozen:
+        img = _gradient((bw, bh), (4, 6, 16), (20, 28, 48))
+    elif dark:
+        img = _gradient((bw, bh), (2, 3, 10), (12, 16, 34))
+    else:
+        img = _gradient((bw, bh), (110, 180, 245), (210, 232, 250))
+    d = ImageDraw.Draw(img)
+    rnd = random.Random(21)
+    if dark or frozen:
+        for _ in range(420):
+            x, y = rnd.uniform(0, bw), rnd.uniform(0, bh * 0.55)
+            r = rnd.uniform(1.2, 4.2) * SS
+            d.ellipse([x - r, y - r, x + r, y + r], fill=(235, 240, 255))
+        # the Milky Way smear
+        band = Image.new("L", (bw, bh), 0)
+        ImageDraw.Draw(band).polygon([(0, bh * 0.35), (bw, bh * 0.05), (bw, bh * 0.15), (0, bh * 0.45)], fill=45)
+        band = band.filter(ImageFilter.GaussianBlur(60 * SS))
+        img.paste((200, 200, 255), (0, 0), band)
+        d = ImageDraw.Draw(img)
+    else:
+        pass  # the Sun itself is drawn per frame (art.sun_disc) so it can vanish
+    horizon = bh * 0.56
+    city = (150, 176, 206) if not (dark or frozen) else (16, 20, 34)
+    _skyline(d, bw, horizon + 40 * SS, city, windows=(255, 220, 120) if dark and not frozen else None)
+    ground = (110, 180, 96) if not (dark or frozen) else (20, 34, 30)
+    if frozen:
+        ground = (190, 210, 230)
+    d.rectangle([0, horizon + 40 * SS, bw, bh], fill=ground)
+    tree = (60, 140, 80) if not (dark or frozen) else (10, 22, 20)
+    if frozen:
+        tree = (120, 140, 160)
+    for k in range(7):
+        x = bw * (0.05 + k * 0.15) + rnd.uniform(-30, 30) * SS
+        base = horizon + 120 * SS
+        d.rectangle([x - 14 * SS, base - 120 * SS, x + 14 * SS, base], fill=(90, 64, 48) if not (dark or frozen) else (14, 16, 20))
+        if frozen:  # bare branches + frost
+            for b in range(5):
+                ang = -math.pi / 2 + (b - 2) * 0.45
+                d.line([(x, base - 100 * SS), (x + math.cos(ang) * 120 * SS, base - 100 * SS + math.sin(ang) * 140 * SS)], fill=tree, width=int(10 * SS))
+        else:
+            d.ellipse([x - 110 * SS, base - 330 * SS, x + 110 * SS, base - 100 * SS], fill=tree)
+    # bench
+    by = horizon + 300 * SS
+    bench = (150, 100, 60) if not (dark or frozen) else (40, 34, 30)
+    d.rectangle([bw * 0.62, by, bw * 0.92, by + 22 * SS], fill=bench)
+    d.rectangle([bw * 0.62, by - 70 * SS, bw * 0.92, by - 50 * SS], fill=bench)
+    if frozen:  # icicles on the bench, snow drifts
+        for k in range(14):
+            x = bw * 0.62 + k * 22 * SS
+            d.polygon([(x, by + 22 * SS), (x + 10 * SS, by + 22 * SS), (x + 5 * SS, by + 70 * SS)], fill=(220, 240, 255))
+        for k in range(8):
+            x = bw * k / 7
+            d.ellipse([x - 240 * SS, horizon + 260 * SS, x + 240 * SS, horizon + 420 * SS], fill=(220, 232, 245))
+    return img
+
+
+def _space(bw, bh):
+    img = _gradient((bw, bh), (2, 2, 8), (8, 6, 20))
+    d = ImageDraw.Draw(img)
+    rnd = random.Random(33)
+    for _ in range(600):
+        x, y = rnd.uniform(0, bw), rnd.uniform(0, bh)
+        r = rnd.uniform(1, 4) * SS
+        c = rnd.choice([(255, 255, 255), (200, 220, 255), (255, 230, 200)])
+        d.ellipse([x - r, y - r, x + r, y + r], fill=c)
+    return img
+
+
+def _ocean_cut(bw, bh):
+    img = _gradient((bw, bh), (14, 40, 70), (2, 6, 14))
+    d = ImageDraw.Draw(img)
+    # sky strip + ice lid
+    d.rectangle([0, 0, bw, bh * 0.22], fill=(4, 6, 14))
+    rnd = random.Random(4)
+    for _ in range(120):
+        x, y = rnd.uniform(0, bw), rnd.uniform(0, bh * 0.2)
+        d.ellipse([x - 3 * SS, y - 3 * SS, x + 3 * SS, y + 3 * SS], fill=(230, 235, 255))
+    pts = [(0, bh * 0.22)] + [(bw * k / 20, bh * 0.22 + rnd.uniform(-10, 10) * SS) for k in range(21)] + [(bw, bh * 0.3), (0, bh * 0.3)]
+    d.polygon(pts, fill=(200, 226, 245))
+    for k in range(30):  # cracks in the ice
+        x = rnd.uniform(0, bw)
+        d.line([(x, bh * 0.23), (x + rnd.uniform(-40, 40) * SS, bh * 0.29)], fill=(160, 196, 226), width=int(3 * SS))
+    # sea floor with vents
+    floor = bh * 0.86
+    pts = [(0, bh)] + [(bw * k / 24, floor + math.sin(k * 0.9) * 26 * SS) for k in range(25)] + [(bw, bh)]
+    d.polygon(pts, fill=(30, 26, 30))
+    for vx in (0.3, 0.62, 0.85):
+        x = bw * vx
+        d.polygon([(x - 70 * SS, floor + 10 * SS), (x - 20 * SS, floor - 230 * SS), (x + 20 * SS, floor - 230 * SS), (x + 70 * SS, floor + 10 * SS)], fill=(54, 44, 46))
+        glow = Image.new("L", (bw, bh), 0)
+        ImageDraw.Draw(glow).ellipse([x - 150 * SS, floor - 340 * SS, x + 150 * SS, floor - 60 * SS], fill=120)
+        glow = glow.filter(ImageFilter.GaussianBlur(40 * SS))
+        img.paste((255, 120, 50), (0, 0), glow)
+        d = ImageDraw.Draw(img)
+        for k in range(18):  # bacterial mats / tube worms
+            tx = x + rnd.uniform(-160, 160) * SS
+            d.line([(tx, floor), (tx, floor - rnd.uniform(30, 90) * SS)], fill=(240, 240, 240), width=int(8 * SS))
+            d.ellipse([tx - 9 * SS, floor - 100 * SS, tx + 9 * SS, floor - 80 * SS], fill=(230, 50, 60))
+    return img
+
+
+def _cave(bw, bh):
+    img = _gradient((bw, bh), (24, 18, 16), (54, 40, 32))
+    d = ImageDraw.Draw(img)
+    rnd = random.Random(8)
+    for k in range(18):  # stalactites
+        x = rnd.uniform(0, bw)
+        d.polygon([(x - 40 * SS, 0), (x + 40 * SS, 0), (x, rnd.uniform(140, 380) * SS)], fill=(70, 56, 48))
+    d.rectangle([0, bh * 0.66, bw, bh], fill=(80, 64, 52))
+    for k in range(6):  # string lights
+        x = bw * (0.1 + k * 0.16)
+        y = bh * 0.3 + math.sin(k) * 30 * SS
+        glow = Image.new("L", (bw, bh), 0)
+        ImageDraw.Draw(glow).ellipse([x - 90 * SS, y - 90 * SS, x + 90 * SS, y + 90 * SS], fill=120)
+        glow = glow.filter(ImageFilter.GaussianBlur(30 * SS))
+        img.paste((255, 200, 120), (0, 0), glow)
+        d = ImageDraw.Draw(img)
+        d.ellipse([x - 16 * SS, y - 16 * SS, x + 16 * SS, y + 16 * SS], fill=(255, 230, 160))
+    # greenhouse grow lights
+    d.rectangle([bw * 0.55, bh * 0.52, bw * 0.95, bh * 0.66], fill=(40, 120, 70))
+    d.rectangle([bw * 0.55, bh * 0.48, bw * 0.95, bh * 0.5], fill=(220, 120, 255))
+    return img
+
+
+def earth(t: float, drift: float = 0.0) -> Image.Image:
+    """Earth as a small planet; drift moves it right over time for the 'flying off' shot."""
+    s = 420 * SS
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    c = s / 2
+    r = 170 * SS
+    d.ellipse([c - r, c - r, c + r, c + r], fill=(40, 100, 200))
+    rnd = random.Random(1)
+    for k in range(7):
+        a = rnd.uniform(0, math.tau)
+        rr = rnd.uniform(0.2, 0.7) * r
+        x, y = c + math.cos(a + t * 0.2) * rr, c + math.sin(a) * rr * 0.8
+        if (x - c) ** 2 + (y - c) ** 2 < (r * 0.85) ** 2:
+            d.ellipse([x - 50 * SS, y - 34 * SS, x + 50 * SS, y + 34 * SS], fill=(70, 150, 90))
+    # night shade (no sun: whole planet dark-ish)
+    shade = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    ImageDraw.Draw(shade).ellipse([c - r, c - r, c + r, c + r], fill=(0, 0, 20, 150))
+    img.alpha_composite(shade)
+    return _down(img)
+
+
+def sun_disc(alpha: float) -> Image.Image:
+    s = 700
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    if alpha <= 0:
+        return img
+    glow = Image.new("L", (s, s), 0)
+    ImageDraw.Draw(glow).ellipse([60, 60, s - 60, s - 60], fill=int(200 * alpha))
+    glow = glow.filter(ImageFilter.GaussianBlur(50))
+    layer = Image.new("RGBA", (s, s), (255, 220, 120, 0))
+    layer.putalpha(glow)
+    img.alpha_composite(layer)
+    ImageDraw.Draw(img).ellipse([200, 200, s - 200, s - 200], fill=(255, 240, 170, int(255 * alpha)))
     return img

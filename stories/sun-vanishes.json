@@ -1,0 +1,275 @@
+{
+  "title": "At 12:00, the Sun disappears. You won't know for 8 minutes.",
+  "voice": "am_michael",
+  "speed": 1.2,
+  "gap": 0.1,
+  "music": "tense",
+  "sources": [
+    "Live Science, 'What would happen to Earth if the sun suddenly vanished?' (29 Mar 2026), with Timothy Cronin (MIT) and Michael Summers (George Mason University): https://www.livescience.com/planet-earth/what-would-happen-to-earth-if-the-sun-suddenly-vanished",
+    "Business Insider, 'Here's what would happen if the sun disappeared right now': https://www.businessinsider.in/Heres-what-would-happen-if-the-sun-disappeared-right-now/articleshow/48430503.cms",
+    "Wikipedia, 'Speed of gravity' (GW170817 constraint): https://en.wikipedia.org/wiki/Speed_of_gravity",
+    "Chris Baird, West Texas A&M, 'What is the speed of gravity?': https://wtamu.edu/~cbaird/sq/mobile/2013/04/30/what-is-the-speed-of-gravity/index.html"
+  ],
+  "shots": [
+    {
+      "text": "At noon, the Sun disappears. For 8 minutes and 20 seconds, nobody on Earth will know.",
+      "say": "At noon, the Sun disappears. For eight minutes and twenty seconds... nobody on Earth will know.",
+      "scene": "park_day",
+      "kicker": "12:00:00",
+      "label": {
+        "text": "THE SUN: GONE",
+        "color": "red"
+      },
+      "sun": {
+        "x": 0.72,
+        "y": 430
+      },
+      "tick": true,
+      "cast": [
+        {
+          "who": "hero",
+          "x": 0.36,
+          "mood": "happy",
+          "scale": 1.1
+        }
+      ]
+    },
+    {
+      "text": "You're in the park. Sun on your face. But that light left before the Sun vanished. You're feeling a ghost.",
+      "scene": "park_day",
+      "kicker": "12:03:10",
+      "label": {
+        "text": "LIGHT FROM A DEAD SUN",
+        "color": "dark"
+      },
+      "sun": {
+        "x": 0.72,
+        "y": 430
+      },
+      "tick": true,
+      "cast": [
+        {
+          "who": "hero",
+          "x": 0.36,
+          "mood": "happy"
+        }
+      ]
+    },
+    {
+      "text": "Even gravity hasn't heard. It moves at light speed too. Earth keeps circling an empty spot.",
+      "scene": "space",
+      "kicker": "12:06:00",
+      "label": {
+        "text": "GRAVITY: DELAYED",
+        "color": "dark"
+      },
+      "earth": {
+        "x": 0.5,
+        "y": 1150
+      },
+      "tick": true,
+      "cast": []
+    },
+    {
+      "text": "12:08 and 20 seconds. The lights go out.",
+      "say": "Twelve oh eight, and twenty seconds. The lights go out.",
+      "scene": "park_dark",
+      "switch": {
+        "from": "park_day",
+        "word": "out"
+      },
+      "sun": {
+        "x": 0.72,
+        "y": 430,
+        "off_word": "out"
+      },
+      "kicker": "12:08:20",
+      "impact": {
+        "word": "out",
+        "flash": "black",
+        "shake": 0.6
+      },
+      "cast": [
+        {
+          "who": "hero",
+          "x": 0.36,
+          "mood": "shock",
+          "scale": 1.1
+        }
+      ]
+    },
+    {
+      "text": "No sunset. Just off. The Moon goes black too. It was only ever a mirror.",
+      "scene": "park_dark",
+      "kicker": "12:08:21",
+      "label": {
+        "text": "THE MOON: DARK TOO",
+        "color": "dark"
+      },
+      "cast": [
+        {
+          "who": "hero",
+          "x": 0.36,
+          "mood": "worried"
+        }
+      ]
+    },
+    {
+      "text": "Gravity lets go. Earth flies off in a straight line, 30 kilometres every second.",
+      "say": "Gravity lets go. Earth flies off in a straight line, thirty kilometres every second.",
+      "scene": "space",
+      "kicker": "12:08:20",
+      "label": {
+        "text": "EARTH: OFF COURSE",
+        "color": "red"
+      },
+      "earth": {
+        "x": 0.3,
+        "y": 1150,
+        "drift": 70
+      },
+      "cast": []
+    },
+    {
+      "text": "One bright dot still shines. Jupiter. Its light was already on the way. An hour later, it goes out too.",
+      "scene": "park_dark",
+      "kicker": "1 HOUR LATER",
+      "label": {
+        "text": "THE LAST LIGHT",
+        "color": "gold"
+      },
+      "star": {
+        "x": 0.68,
+        "y": 520,
+        "off_word": "goes",
+        "tag": "JUPITER"
+      },
+      "cast": [
+        {
+          "who": "hero",
+          "x": 0.36,
+          "mood": "shock"
+        }
+      ]
+    },
+    {
+      "text": "Then the cold. Scientists estimate around 20 degrees lost per day at first.",
+      "say": "Then the cold. Scientists estimate around twenty degrees lost per day, at first.",
+      "scene": "park_frozen",
+      "kicker": "DAY 1",
+      "label": {
+        "text": "−20°C PER DAY",
+        "color": "red"
+      },
+      "cast": [
+        {
+          "who": "hero",
+          "x": 0.36,
+          "mood": "cold"
+        }
+      ]
+    },
+    {
+      "text": "In two or three days, it's freezing everywhere. Ponds freeze. Plants sleep, like winter. This winter never ends.",
+      "scene": "mind",
+      "card": {
+        "title": "THE COUNTDOWN",
+        "rows": [
+          [
+            "Day 1",
+            "−20°C / DAY",
+            "bad"
+          ],
+          [
+            "Day 3",
+            "FREEZING EVERYWHERE",
+            "bad"
+          ],
+          [
+            "Plants",
+            "NEVER WAKE UP",
+            "bad"
+          ]
+        ]
+      },
+      "cast": [
+        {
+          "who": "hero",
+          "x": 0.5,
+          "mood": "cold"
+        }
+      ]
+    },
+    {
+      "text": "But the oceans don't freeze solid. Ice forms a lid, and underneath, the water could stay liquid for decades.",
+      "scene": "ocean_cut",
+      "label": {
+        "text": "UNDER THE ICE: STILL LIQUID",
+        "color": "gold"
+      },
+      "cast": []
+    },
+    {
+      "text": "At the bottom, by volcanic vents, bacteria keep living. They never needed the Sun. They eat Earth's own heat.",
+      "scene": "ocean_cut",
+      "label": {
+        "text": "LIFE THAT NEVER NEEDED THE SUN",
+        "color": "gold"
+      },
+      "cast": []
+    },
+    {
+      "text": "Your move? Copy them. Go underground. Geothermal power. Food under lamps.",
+      "scene": "cave",
+      "label": {
+        "text": "SURVIVAL: UNDERGROUND",
+        "color": "dark"
+      },
+      "cast": [
+        {
+          "who": "hero",
+          "x": 0.3,
+          "mood": "calm"
+        },
+        {
+          "who": "scientist",
+          "x": 0.72,
+          "mood": "calm"
+        }
+      ]
+    },
+    {
+      "text": "And somewhere four light years away, anyone looking at our Sun still sees it shining. For four more years.",
+      "scene": "space",
+      "kicker": "4 LIGHT YEARS AWAY",
+      "label": {
+        "text": "SOMEONE STILL SEES IT",
+        "color": "gold"
+      },
+      "sun": {
+        "x": 0.5,
+        "y": 1050
+      },
+      "cast": []
+    },
+    {
+      "text": "If you had 8 minutes of sunlight left, what would you do?",
+      "say": "If you had eight minutes of sunlight left... what would you do?",
+      "scene": "park_day",
+      "kicker": "8:20 LEFT",
+      "sun": {
+        "x": 0.72,
+        "y": 430
+      },
+      "tick": true,
+      "cast": [
+        {
+          "who": "hero",
+          "x": 0.36,
+          "mood": "calm",
+          "scale": 1.1
+        }
+      ]
+    }
+  ]
+}
