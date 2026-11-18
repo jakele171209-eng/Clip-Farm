@@ -503,3 +503,101 @@ def shrimp(flip: bool = False) -> Image.Image:
         d.ellipse([ex - 8 * SS, ey - 14 * SS, ex + 4 * SS, ey - 4 * SS], fill=(255, 255, 255))
     out = _down(img)
     return out.transpose(Image.FLIP_LEFT_RIGHT) if flip else out
+
+
+# ---------------------------------------------------------------- action props
+
+def burst(text: str) -> Image.Image:
+    """Comic impact star with a word in it."""
+    s = 520 * SS
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    c = s / 2
+    for rad, col in ((250, (255, 255, 255)), (215, (255, 205, 40)), (170, (255, 120, 40))):
+        pts = []
+        for k in range(28):
+            r = rad * SS * (1.0 if k % 2 == 0 else 0.62)
+            a = k * math.tau / 28
+            pts.append((c + math.cos(a) * r, c + math.sin(a) * r))
+        d.polygon(pts, fill=col)
+    d.text((c, c), text, font=font(96 * SS), fill=(255, 255, 255), anchor="mm", stroke_width=10 * SS, stroke_fill=(30, 20, 20))
+    return _down(img)
+
+
+@lru_cache(maxsize=16)
+def prop(kind: str, broken: bool) -> Image.Image:
+    """Things to punch: vending machine, brick wall, aquarium. Bottom centre = floor contact."""
+    w, h = 360 * SS, 640 * SS
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    crack = (30, 30, 40)
+    if kind == "vending":
+        d.rounded_rectangle([0, 0, w, h], radius=24 * SS, fill=(220, 50, 60))
+        d.rectangle([30 * SS, 40 * SS, 240 * SS, 470 * SS], fill=(200, 230, 245))
+        rnd = random.Random(2)
+        for r in range(5):
+            for c in range(3):
+                x, y = 50 * SS + c * 66 * SS, 60 * SS + r * 82 * SS
+                d.rounded_rectangle([x, y, x + 46 * SS, y + 60 * SS], radius=8 * SS,
+                                    fill=rnd.choice([(255, 180, 60), (90, 180, 255), (120, 220, 120), (250, 110, 160)]))
+        d.rectangle([260 * SS, 120 * SS, 330 * SS, 300 * SS], fill=(60, 60, 70))
+        d.rectangle([60 * SS, 520 * SS, 220 * SS, 580 * SS], fill=(40, 40, 50))
+        if broken:
+            d.polygon([(20 * SS, 40 * SS), (240 * SS, 30 * SS), (250 * SS, 470 * SS), (30 * SS, 480 * SS)], fill=(170, 200, 215))
+            for a in range(9):
+                ang = a * math.tau / 9
+                d.line([(135 * SS, 250 * SS), (135 * SS + math.cos(ang) * 200 * SS, 250 * SS + math.sin(ang) * 230 * SS)], fill=crack, width=5 * SS)
+            img = img.rotate(-6, resample=Image.BICUBIC, center=(w / 2, h))
+    elif kind == "wall":
+        d.rectangle([0, 0, w, h], fill=(180, 90, 70))
+        for r in range(16):
+            y = r * 40 * SS
+            off = 0 if r % 2 == 0 else 45 * SS
+            d.line([(0, y), (w, y)], fill=(230, 220, 210), width=5 * SS)
+            for c in range(-1, 5):
+                x = c * 90 * SS + off
+                d.line([(x, y), (x, y + 40 * SS)], fill=(230, 220, 210), width=5 * SS)
+        if broken:
+            for a in range(7):
+                ang = a * math.tau / 7 + 0.3
+                d.line([(180 * SS, 330 * SS), (180 * SS + math.cos(ang) * 120 * SS, 330 * SS + math.sin(ang) * 140 * SS)], fill=crack, width=6 * SS)
+    elif kind == "tank":
+        h2 = 420 * SS
+        top = h - h2
+        d.rectangle([0, top, w, h], fill=(120, 200, 240, 180))
+        d.rectangle([0, top, w, top + 30 * SS], fill=(90, 170, 220, 200))
+        d.rectangle([0, h - 40 * SS, w, h], fill=(226, 196, 140))
+        d.rectangle([0, top, w, h], outline=(230, 245, 255), width=10 * SS)
+        if broken:
+            for a in range(10):
+                ang = a * math.tau / 10
+                d.line([(110 * SS, top + 200 * SS), (110 * SS + math.cos(ang) * 260 * SS, top + 200 * SS + math.sin(ang) * 200 * SS)], fill=(255, 255, 255), width=5 * SS)
+            for k in range(14):  # water spray
+                x = -40 * SS + k * 8 * SS
+                d.ellipse([x, top + 180 * SS + k * 12 * SS, x + 26 * SS, top + 206 * SS + k * 12 * SS], fill=(120, 200, 240))
+    return _down(img)
+
+
+def club_arm(length: float) -> Image.Image:
+    """Pink striking club on an arm, pointing right. length in px (output scale)."""
+    L = int(max(60, length)) * SS
+    h = 150 * SS
+    img = Image.new("RGBA", (L + 140 * SS, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([0, h / 2 - 24 * SS, L, h / 2 + 24 * SS], radius=24 * SS, fill=(36, 150, 140))
+    d.ellipse([L - 20 * SS, 5 * SS, L + 130 * SS, h - 5 * SS], fill=(255, 120, 150))
+    d.ellipse([L + 30 * SS, 30 * SS, L + 80 * SS, 70 * SS], fill=(255, 200, 215))
+    return _down(img)
+
+
+def speedlines(t: float) -> Image.Image:
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    rnd = random.Random(int(t * 20))
+    for _ in range(46):
+        a = rnd.uniform(0, math.tau)
+        r0 = rnd.uniform(380, 560)
+        cx, cy = W / 2, H * 0.62
+        d.line([(cx + math.cos(a) * r0, cy + math.sin(a) * r0), (cx + math.cos(a) * 1500, cy + math.sin(a) * 1500)],
+               fill=(255, 255, 255, 150), width=rnd.randint(3, 9))
+    return img

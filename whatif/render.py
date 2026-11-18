@@ -106,6 +106,44 @@ def pop(at: float, buf: np.ndarray, pitch: float = 880):
     buf[i0:i0 + m] += np.sin(2 * np.pi * f * pt) * np.exp(-pt * 45) * 0.25
 
 
+def boom(at: float, buf: np.ndarray):
+    """Low thump + noise crack for impacts."""
+    i0 = int(at * SR)
+    m = int(0.5 * SR)
+    if i0 + m > len(buf):
+        m = len(buf) - i0
+    if m <= 0:
+        return
+    pt = np.arange(m) / SR
+    rng = np.random.default_rng(1)
+    noise = rng.standard_normal(m) * np.exp(-pt * 30)
+    thump = np.sin(2 * np.pi * (60 + 90 * np.exp(-pt * 20)) * pt) * np.exp(-pt * 6)
+    buf[i0:i0 + m] += (thump * 0.7 + noise * 0.35)
+
+
+def whoosh(at: float, buf: np.ndarray):
+    i0 = int(at * SR)
+    m = int(0.22 * SR)
+    if i0 + m > len(buf) or i0 < 0:
+        return
+    pt = np.arange(m) / SR
+    rng = np.random.default_rng(2)
+    noise = np.convolve(rng.standard_normal(m), np.ones(12) / 12, mode="same")
+    env = np.sin(np.pi * pt / pt[-1]) ** 2
+    buf[i0:i0 + m] += noise * env * 0.18
+
+
+def impact_time(shot) -> float | None:
+    imp = shot.spec.get("impact")
+    if not imp:
+        return None
+    key = imp.get("word", "").lower()
+    for w, t0, t1 in shot.words:
+        if key and re.sub(r"[^\w]", "", w.lower()) == key:
+            return t0
+    return shot.dur * imp.get("at", 0.5)
+
+
 def write_wav(path, samples):
     s = np.clip(samples, -1, 1)
     with wave.open(path, "wb") as w:
@@ -162,7 +200,9 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
     sp = shot.spec
     prog = t / max(shot.dur, 0.01)
     bg = art.background(sp["scene"])
-    z = 1.0 + 0.07 * prog
+    z = 1.0 + 0.07 * prog + 0.07 * max(0.0, 1 - t / 0.18) ** 2  # quick punch-in on every cut
+    ti = impact_time(shot)
+    hit = ti is not None and t >= ti
     # the background is 15% oversized; crop toward the centre-bottom as we push in
     cw, chh = W * 1.15 / z, H * 1.15 / z
     x0 = (bg.width - cw) / 2
@@ -196,6 +236,30 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
         bob = math.sin(gt * 2.5) * 12
         frame.alpha_composite(img, (int(W * sx - img.width / 2), int(1260 + bob)))
 
+    if sp.get("speedlines"):
+        frame.alpha_composite(art.speedlines(gt))
+
+    ground_y = 1640
+    if "prop" in sp:
+        pr = sp["prop"]
+        img = art.prop(pr["kind"], bool(pr.get("broken")) or hit)
+        frame.alpha_composite(img, (int(W * pr.get("x", 0.72) - img.width / 2), int(ground_y - img.height)))
+
+    if sp.get("punch") and sp.get("cast"):
+        hero = sp["cast"][0]
+        hx = W * hero["x"]
+        tx = W * sp.get("prop", {}).get("x", 0.8) - 120
+        reach = tx - hx - 60
+        if ti is not None and ti - 0.05 <= t <= ti + 0.45:
+            length = reach
+        elif ti is not None and t < ti:
+            length = 70  # cocked
+        else:
+            length = 120
+        arm = art.club_arm(length)
+        sp_arm = (int(hx + 30), int(1350 - arm.height / 2))
+        sp["_arm"] = (arm, sp_arm)
+
     if sp.get("fire"):
         paste_scaled(frame, art.fire(gt), W / 2, 1460, 1.0)
 
@@ -210,6 +274,16 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
         x = W * c["x"]
         frame.alpha_composite(img, (int(x - img.width / 2), int(ground - img.height + bob - (squash - 1) * 120)))
 
+    if sp.get("_arm"):
+        arm, pos = sp.pop("_arm")
+        frame.alpha_composite(arm, pos)
+
+    if ti is not None and ti <= t <= ti + 0.6:
+        imp = sp["impact"]
+        k = (t - ti) / 0.6
+        bx = W * imp.get("x", sp.get("prop", {}).get("x", 0.6))
+        paste_scaled(frame, art.burst(imp.get("text", "POW!")), bx, imp.get("y", 1200), ease_pop(k / 0.3) * (1 - 0.15 * k))
+
     # labels at the top
     if "kicker" in sp:
         paste_scaled(frame, art.pill(sp["kicker"], "kicker", 34), W / 2, 210, ease_pop((t - 0.0) / 0.2))
@@ -219,7 +293,15 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
 
     cap_y = (card_bottom + 110) if card_bottom else 820
     caption(frame, shot.words, t, cap_y)
-    return frame.convert("RGB")
+    out = frame.convert("RGB")
+    if ti is not None and ti <= t <= ti + 0.35:  # screen shake + white flash
+        k = 1 - (t - ti) / 0.35
+        amp = 34 * k
+        dx, dy = int(math.sin(t * 90) * amp), int(math.cos(t * 77) * amp)
+        shaken = Image.new("RGB", (W, H), (255, 255, 255))
+        shaken.paste(out, (dx, dy))
+        out = Image.blend(shaken, Image.new("RGB", (W, H), (255, 255, 255)), max(0.0, 0.55 * (k - 0.6) / 0.4))
+    return out
 
 
 # ------------------------------------------------------------------ main
@@ -227,15 +309,16 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
 def render(story_path: str, out_path: str, preview: float | None = None):
     story = json.load(open(story_path, encoding="utf-8"))
     voice, speed = story.get("voice", "am_michael"), story.get("speed", 1.05)
+    gap = story.get("gap", GAP)
     shots, voice_parts, t = [], [], 0.0
     for sp in story["shots"]:
         audio = speak(sp.get("say", sp["text"]), voice, speed)
         dur = len(audio) / SR
-        sh = Shot(sp, start=t, dur=dur + GAP)
+        sh = Shot(sp, start=t, dur=dur + gap)
         sh.words = word_times(sp["text"], dur)
         shots.append(sh)
         voice_parts.append(audio)
-        voice_parts.append(np.zeros(int(GAP * SR), dtype=np.float32))
+        voice_parts.append(np.zeros(int(gap * SR), dtype=np.float32))
         t += sh.dur
     total = t + 0.6
     if preview:
@@ -247,6 +330,10 @@ def render(story_path: str, out_path: str, preview: float | None = None):
     mix[: min(n, len(voice_track))] += voice_track[:n] * 0.95
     mix += music_bed(total)[:n]
     for sh in shots:
+        whoosh(sh.start - 0.06, mix)
+        ti = impact_time(sh)
+        if ti is not None:
+            boom(sh.start + ti, mix)
         if "label" in sh.spec or "card" in sh.spec:
             pop(sh.start + 0.08, mix, 900)
         if "card" in sh.spec and not sh.spec["card"].get("alert"):

@@ -1,0 +1,368 @@
+{
+  "title": "What if you got every mantis shrimp power for 24 hours?",
+  "voice": "am_michael",
+  "speed": 1.25,
+  "gap": 0.12,
+  "sources": [
+    "UC Berkeley news release, 'Mantis shrimp may have swiftest kick in the animal kingdom' (2004), on Patek, Korff & Caldwell, Nature 428:819: https://newsarchive.berkeley.edu/news/media/releases/2004/04/21_shrimp.shtml",
+    "National Geographic, 'The mantis shrimp sees like a satellite' (2014), on Thoen et al., Science 343:411: https://www.nationalgeographic.com/science/article/the-mantis-shrimp-sees-like-a-satellite",
+    "Jerry Coyne, 'A marvel of evolution: the dactyl club of stomatopods' (2012), on Weaver et al., Science 336:1275: https://whyevolutionistrue.com/2012/06/16/a-marvel-of-evolution-the-dactyl-club-of-stomatopods/"
+  ],
+  "shots": [
+    {
+      "text": "You get every mantis shrimp power for 24 hours. Rule one: do not high-five anyone.",
+      "say": "You get every mantis shrimp power for twenty-four hours. Rule one: do not high-five anyone.",
+      "scene": "reef",
+      "kicker": "WHAT IF",
+      "label": {
+        "text": "MANTIS SHRIMP MODE: ON",
+        "color": "gold"
+      },
+      "shrimp": {
+        "x": 0.74
+      },
+      "cast": [
+        {
+          "who": "hero_shrimp",
+          "x": 0.32,
+          "mood": "shock",
+          "scale": 1.1
+        }
+      ]
+    },
+    {
+      "text": "By tonight, you'll have wrecked a vending machine. And your own hand.",
+      "scene": "lab",
+      "kicker": "TONIGHT",
+      "label": {
+        "text": "DAMAGE REPORT: 2 ITEMS",
+        "color": "red"
+      },
+      "prop": {
+        "kind": "vending",
+        "x": 0.74
+      },
+      "impact": {
+        "word": "hand",
+        "text": "OUCH"
+      },
+      "cast": [
+        {
+          "who": "hero_shrimp",
+          "x": 0.3,
+          "mood": "worried"
+        }
+      ]
+    },
+    {
+      "text": "Power one: your eyes. 12 types of color receptors. You used to have 3.",
+      "say": "Power one: your eyes. Twelve types of colour receptors. You used to have three.",
+      "scene": "mind",
+      "card": {
+        "title": "POWER 1: THE EYES",
+        "rows": [
+          [
+            "Color receptors",
+            "3 → 12",
+            "good"
+          ],
+          [
+            "Ultraviolet",
+            "UNLOCKED",
+            "good"
+          ]
+        ]
+      },
+      "cast": [
+        {
+          "who": "hero_shrimp",
+          "x": 0.5,
+          "mood": "smug"
+        }
+      ]
+    },
+    {
+      "text": "Plot twist: in a real color test, humans beat the shrimp. Easily.",
+      "scene": "lab",
+      "label": {
+        "text": "COLOR TEST: HUMANS WIN",
+        "color": "red"
+      },
+      "lamps": [
+        [
+          120,
+          200,
+          120
+        ],
+        [
+          150,
+          205,
+          110
+        ]
+      ],
+      "cast": [
+        {
+          "who": "hero_shrimp",
+          "x": 0.28,
+          "mood": "awkward"
+        },
+        {
+          "who": "scientist",
+          "x": 0.72,
+          "mood": "smug"
+        }
+      ]
+    },
+    {
+      "text": "Fine. Power two. The punch.",
+      "scene": "mind",
+      "label": {
+        "text": "POWER 2: THE PUNCH",
+        "color": "gold"
+      },
+      "speedlines": true,
+      "cast": [
+        {
+          "who": "hero_shrimp",
+          "x": 0.5,
+          "mood": "smug",
+          "scale": 1.3
+        }
+      ]
+    },
+    {
+      "text": "A mantis shrimp's club hits 83 kilometres an hour, from a standing start.",
+      "say": "A mantis shrimp's club hits eighty-three kilometres an hour, from a standing start.",
+      "scene": "reef",
+      "label": {
+        "text": "0 → 83 KM/H",
+        "color": "dark"
+      },
+      "shrimp": {
+        "x": 0.5
+      },
+      "speedlines": true,
+      "impact": {
+        "word": "standing",
+        "text": "SNAP!",
+        "x": 0.75,
+        "y": 1330
+      },
+      "cast": []
+    },
+    {
+      "text": "That's over 6,000 g. Fighter pilots struggle at 9.",
+      "say": "That's over six thousand G. Fighter pilots struggle at nine.",
+      "scene": "mind",
+      "card": {
+        "title": "ACCELERATION",
+        "rows": [
+          [
+            "Fighter pilot",
+            "~9 g",
+            "good"
+          ],
+          [
+            "Mantis shrimp club",
+            "6,300–8,000 g",
+            "bad"
+          ]
+        ]
+      },
+      "cast": [
+        {
+          "who": "hero_shrimp",
+          "x": 0.5,
+          "mood": "shock"
+        }
+      ]
+    },
+    {
+      "text": "Muscles can't move that fast. So the shrimp cheats: a spring shaped like a Pringles chip, locked like a crossbow.",
+      "scene": "mind",
+      "card": {
+        "title": "THE CHEAT CODE",
+        "rows": [
+          [
+            "1. Load the spring",
+            "SQUEEZE",
+            "good"
+          ],
+          [
+            "2. Lock the latch",
+            "CLICK",
+            "good"
+          ],
+          [
+            "3. Release",
+            "SNAP",
+            "bad"
+          ]
+        ]
+      },
+      "cast": [
+        {
+          "who": "scientist",
+          "x": 0.5,
+          "mood": "smug"
+        }
+      ]
+    },
+    {
+      "text": "Underwater it's worse. The strike rips the water into bubbles, and when they collapse, they hit again.",
+      "scene": "reef",
+      "label": {
+        "text": "ONE PUNCH, TWO HITS",
+        "color": "red"
+      },
+      "shrimp": {
+        "x": 0.35
+      },
+      "impact": {
+        "word": "collapse",
+        "text": "POP!",
+        "x": 0.72,
+        "y": 1330
+      },
+      "cast": []
+    },
+    {
+      "text": "Some have even been known to crack the glass of their own tanks.",
+      "scene": "lab",
+      "label": {
+        "text": "TANK GLASS: CRACKED",
+        "color": "red"
+      },
+      "prop": {
+        "kind": "tank",
+        "x": 0.7
+      },
+      "impact": {
+        "word": "crack",
+        "text": "CRACK!"
+      },
+      "shrimp": {
+        "x": 0.3
+      },
+      "cast": []
+    },
+    {
+      "text": "So you load the spring, and hit the vending machine.",
+      "scene": "lab",
+      "label": {
+        "text": "TEST PUNCH",
+        "color": "dark"
+      },
+      "prop": {
+        "kind": "vending",
+        "x": 0.76
+      },
+      "punch": true,
+      "impact": {
+        "word": "hit",
+        "text": "BOOM!"
+      },
+      "cast": [
+        {
+          "who": "hero_shrimp",
+          "x": 0.26,
+          "mood": "smug"
+        }
+      ]
+    },
+    {
+      "text": "The machine is destroyed. So is every bone in your hand.",
+      "scene": "lab",
+      "label": {
+        "text": "MACHINE: 0 · HAND: ALSO 0",
+        "color": "red"
+      },
+      "prop": {
+        "kind": "vending",
+        "x": 0.76,
+        "broken": true
+      },
+      "impact": {
+        "word": "bone",
+        "text": "OUCH!",
+        "x": 0.3,
+        "y": 1250
+      },
+      "cast": [
+        {
+          "who": "hero_shrimp",
+          "x": 0.26,
+          "mood": "shock"
+        }
+      ]
+    },
+    {
+      "text": "The real power was never the punch. It's the club, built in layers that stop cracks spreading.",
+      "scene": "mind",
+      "card": {
+        "title": "THE REAL SECRET",
+        "rows": [
+          [
+            "Hard outer surface",
+            "IMPACT",
+            "good"
+          ],
+          [
+            "Layered core",
+            "STOPS CRACKS",
+            "good"
+          ],
+          [
+            "Worn out?",
+            "MOLT A NEW ONE",
+            "good"
+          ]
+        ]
+      },
+      "cast": [
+        {
+          "who": "hero_shrimp",
+          "x": 0.5,
+          "mood": "awkward"
+        }
+      ]
+    },
+    {
+      "text": "When it wears out, the shrimp grows a new one. You only get one hand.",
+      "scene": "reef",
+      "label": {
+        "text": "YOU GOT THE PUNCH. NOT THE HAND.",
+        "color": "red"
+      },
+      "shrimp": {
+        "x": 0.72
+      },
+      "cast": [
+        {
+          "who": "hero_shrimp",
+          "x": 0.3,
+          "mood": "awkward"
+        }
+      ]
+    },
+    {
+      "text": "Which animal power would you actually survive?",
+      "scene": "reef",
+      "label": {
+        "text": "YOUR TURN",
+        "color": "gold"
+      },
+      "shrimp": {
+        "x": 0.74
+      },
+      "cast": [
+        {
+          "who": "hero_shrimp",
+          "x": 0.3,
+          "mood": "happy",
+          "scale": 1.1
+        }
+      ]
+    }
+  ]
+}
