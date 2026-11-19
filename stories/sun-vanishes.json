@@ -8,7 +8,9 @@
     "Live Science, 'What would happen to Earth if the sun suddenly vanished?' (29 Mar 2026), with Timothy Cronin (MIT) and Michael Summers (George Mason University): https://www.livescience.com/planet-earth/what-would-happen-to-earth-if-the-sun-suddenly-vanished",
     "Business Insider, 'Here's what would happen if the sun disappeared right now': https://www.businessinsider.in/Heres-what-would-happen-if-the-sun-disappeared-right-now/articleshow/48430503.cms",
     "Wikipedia, 'Speed of gravity' (GW170817 constraint): https://en.wikipedia.org/wiki/Speed_of_gravity",
-    "Chris Baird, West Texas A&M, 'What is the speed of gravity?': https://wtamu.edu/~cbaird/sq/mobile/2013/04/30/what-is-the-speed-of-gravity/index.html"
+    "Chris Baird, West Texas A&M, 'What is the speed of gravity?': https://wtamu.edu/~cbaird/sq/mobile/2013/04/30/what-is-the-speed-of-gravity/index.html",
+    "NASA Earth Fact Sheet (orbital velocity ~29.8 km/s, mean surface temperature ~15 °C): https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html",
+    "Wikipedia, 'Muzzle velocity' (rifle bullets roughly 0.8-1.2 km/s): https://en.wikipedia.org/wiki/Muzzle_velocity"
   ],
   "shots": [
     {
@@ -132,10 +134,26 @@
       },
       "earth": {
         "x": 0.3,
-        "y": 1150,
+        "y": 1330,
         "drift": 70
       },
-      "cast": []
+      "cast": [],
+      "bars": {
+        "title": "HOW FAST EARTH IS NOW FLYING",
+        "rows": [
+          {
+            "name": "RIFLE BULLET",
+            "value": 1,
+            "unit": "km/s"
+          },
+          {
+            "name": "EARTH",
+            "value": 30,
+            "unit": "km/s",
+            "hl": true
+          }
+        ]
+      }
     },
     {
       "text": "One bright dot still shines. Jupiter. Its light was already on the way. An hour later, it goes out too.",
@@ -174,7 +192,13 @@
           "x": 0.36,
           "mood": "cold"
         }
-      ]
+      ],
+      "counter": {
+        "from": 15,
+        "to": -5,
+        "unit": "°C",
+        "label": "AVERAGE TEMPERATURE"
+      }
     },
     {
       "text": "In two or three days, it's freezing everywhere. Ponds freeze. Plants sleep, like winter. This winter never ends.",

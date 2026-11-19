@@ -9,7 +9,7 @@ import math
 import random
 from functools import lru_cache
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 W, H = 1080, 1920
 SS = 2  # supersampling factor
@@ -314,6 +314,16 @@ def character(who: str, mood: str, blink: bool = False, scale: float = 1.0) -> I
         d.ellipse([cx + hr * 0.75, hy - 40 * SS, cx + hr * 0.75 + 26 * SS, hy - 4 * SS], fill=(150, 210, 250))
     if mood == "cold":  # breath puff
         d.ellipse([cx + 60 * SS, my - 10 * SS, cx + 110 * SS, my + 30 * SS], fill=(255, 255, 255, 170))
+    if mood in ("happy", "calm", "shock", "smug", "flat", "awkward"):  # rosy cheeks
+        blush = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
+        bd = ImageDraw.Draw(blush)
+        for sx in (-1, 1):
+            x = cx + sx * 74 * SS
+            bd.ellipse([x - 24 * SS, ey + 30 * SS, x + 24 * SS, ey + 50 * SS], fill=(255, 120, 120, 80))
+        img.alpha_composite(blush)
+        d = ImageDraw.Draw(img)
+    if who != "hero_shrimp":
+        _arms(d, cx, L, mood, skin)
     if who == "hero_shrimp":  # eyes on stalks poking out of the toque
         oy = 170 * SS
         big = Image.new("RGBA", (cw, ch + oy), (0, 0, 0, 0))
@@ -330,9 +340,63 @@ def character(who: str, mood: str, blink: bool = False, scale: float = 1.0) -> I
                 bd.line([(tipx - 40 * SS, tipy), (tipx + 40 * SS, tipy)], fill=(250, 220, 90), width=6 * SS)
         big.alpha_composite(img, (0, oy))
         img = big
-    out = _down(img)
+    out = _shade(_down(img))
     if scale != 1.0:
         out = out.resize((int(out.width * scale), int(out.height * scale)), Image.LANCZOS)
+    return out
+
+
+ARM_POSES = {  # hand positions relative to (cx, shoulder) in 1x units, (left, right)
+    "shock": ((-150, -120), (150, -120)),
+    "happy": ((-150, 140), (175, -150)),
+    "worried": ((-36, 110), (36, 110)),
+    "cold": ((70, 70), (-70, 70)),
+}
+
+
+def _arms(d, cx, L, mood, skin):
+    """Stubby arms with mittens; the pose follows the mood."""
+    sy = 335 * SS
+    coat = _lerp(L["coat"], (0, 0, 0), 0.12)
+    edge = _lerp(L["coat"], (0, 0, 0), 0.45)
+    hand = L["hat"] if L.get("hat_style") == "toque" else skin
+    pose = ARM_POSES.get(mood, ((-160, 150), (160, 150)))
+    for sx, (hx, hy) in zip((-1, 1), pose):
+        a = (cx + sx * 112 * SS, sy)
+        b = (cx + hx * SS, sy + hy * SS)
+        d.line([a, b], fill=edge, width=54 * SS)
+        for p in (a, b):
+            d.ellipse([p[0] - 27 * SS, p[1] - 27 * SS, p[0] + 27 * SS, p[1] + 27 * SS], fill=edge)
+        d.line([a, b], fill=coat, width=42 * SS)
+        d.ellipse([a[0] - 21 * SS, a[1] - 21 * SS, a[0] + 21 * SS, a[1] + 21 * SS], fill=coat)
+        d.ellipse([b[0] - 32 * SS, b[1] - 32 * SS, b[0] + 32 * SS, b[1] + 32 * SS], fill=edge)
+        d.ellipse([b[0] - 26 * SS, b[1] - 26 * SS, b[0] + 26 * SS, b[1] + 26 * SS], fill=hand)
+
+
+def _shift(mask, dx, dy):
+    out = Image.new("L", mask.size, 0)
+    out.paste(mask, (dx, dy))
+    return out
+
+
+def _shade(img: Image.Image) -> Image.Image:
+    """Cartoon finish: soft shadow on the lower right, rim light on the upper left, dark outline."""
+    a = img.getchannel("A")
+    shadow = ImageChops.subtract(a, _shift(a, -16, -10)).filter(ImageFilter.GaussianBlur(6))
+    shadow = ImageChops.multiply(shadow, a).point(lambda v: int(v * 0.30))
+    light = ImageChops.subtract(a, _shift(a, 8, 8)).filter(ImageFilter.GaussianBlur(3))
+    light = ImageChops.multiply(light, a).point(lambda v: int(v * 0.22))
+    img = img.copy()
+    img.paste((24, 14, 44), (0, 0), shadow)
+    img.paste((255, 255, 255), (0, 0), light)
+    img.putalpha(a)
+    pad = 6
+    big = Image.new("RGBA", (img.width + pad * 2, img.height + pad * 2), (0, 0, 0, 0))
+    big.paste(img, (pad, pad))
+    ring = big.getchannel("A").filter(ImageFilter.MaxFilter(7))
+    out = Image.new("RGBA", big.size, (28, 22, 40, 0))
+    out.putalpha(ring)
+    out.alpha_composite(big)
     return out
 
 
@@ -775,6 +839,7 @@ def earth(t: float, drift: float = 0.0) -> Image.Image:
     return _down(img)
 
 
+@lru_cache(maxsize=8)
 def sun_disc(alpha: float) -> Image.Image:
     s = 700
     img = Image.new("RGBA", (s, s), (0, 0, 0, 0))

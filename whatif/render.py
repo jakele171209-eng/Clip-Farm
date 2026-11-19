@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 import numpy as np
 from PIL import Image, ImageDraw
 
-from . import art
+from . import art, fx
 from .art import H, W
 from .tts import SR, speak
 
@@ -215,6 +215,7 @@ def caption(frame, words, t, y):
     else:
         return
     texts = [w[0].upper() for w in ch]
+    pop_k = ease_pop((t - ch[0][1] + 0.04) / 0.14)
     size = 92
     while True:
         f = art.font(size)
@@ -223,6 +224,17 @@ def caption(frame, words, t, y):
         if total <= W - 120 or size <= 50:
             break
         size -= 4
+    size = max(20, int(size * (0.82 + 0.18 * pop_k)))
+    f = art.font(size)
+    space = f.getlength(" ")
+    total = sum(f.getlength(x) for x in texts) + space * (len(texts) - 1)
+    sh_layer = Image.new("RGBA", (W, 260), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(sh_layer)
+    sx = W / 2 - total / 2
+    for txt in texts:  # soft drop shadow under the caption
+        sd.text((sx + 6, 139), txt, font=f, fill=(0, 0, 0, 110), anchor="lm", stroke_width=12, stroke_fill=(0, 0, 0, 110))
+        sx += f.getlength(txt) + space
+    frame.alpha_composite(sh_layer, (0, int(y - 130)))
     d = ImageDraw.Draw(frame)
     x = W / 2 - total / 2
     for (w, t0, t1), txt in zip(ch, texts):
@@ -245,8 +257,9 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
     hit = ti is not None and t >= ti
     # the background is 15% oversized; crop toward the centre-bottom as we push in
     cw, chh = W * 1.15 / z, H * 1.15 / z
-    x0 = (bg.width - cw) / 2
-    y0 = (bg.height - chh) * 0.6
+    cam = (26 * math.sin(gt * 0.23), 14 * math.sin(gt * 0.31 + 1.0))
+    x0 = (bg.width - cw) / 2 - cam[0] * 0.5
+    y0 = (bg.height - chh) * 0.6 - cam[1] * 0.5
     frame = bg.crop((int(x0), int(y0), int(x0 + cw), int(y0 + chh))).resize((W, H), Image.BILINEAR).convert("RGBA")
 
     card_bottom = None
@@ -279,7 +292,11 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
     if "sun" in sp:
         off = word_time(shot, sp["sun"].get("off_word", ""), None)
         if off is None or t < off:
-            paste_scaled(frame, art.sun_disc(1.0), W * sp["sun"].get("x", 0.72), sp["sun"].get("y", 420), 1.0)
+            sx_, sy_ = W * sp["sun"].get("x", 0.72), sp["sun"].get("y", 420)
+            fx.sun_rays(frame, sx_, sy_, gt, 0.9)
+            paste_scaled(frame, art.sun_disc(1.0), sx_, sy_, 1.0 + 0.02 * math.sin(gt * 2))
+
+    fx.particles(frame, scene, gt, cam)
 
     if "star" in sp:  # a planet still shining, then going out
         st = sp["star"]
@@ -339,10 +356,17 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
         blink = (gt * 0.37 + i * 0.29) % 1.0 < 0.04
         scale = c.get("scale", 1.0) * (0.85 if "card" in sp else 1.0)
         img = art.character(c["who"], c.get("mood", "calm"), blink, scale)
-        bob = math.sin(gt * 3.2 + i * 1.7) * 7
-        squash = 1 + 0.06 * max(0, 1 - t / 0.2)  # tiny hop on shot start
-        x = W * c["x"]
-        frame.alpha_composite(img, (int(x - img.width / 2), int(ground - img.height + bob - (squash - 1) * 120)))
+        breath = 1 + 0.014 * math.sin(gt * 2.6 + i)
+        img = img.resize((img.width, int(img.height * breath)), Image.BILINEAR)
+        bob = math.sin(gt * 3.2 + i * 1.7) * 5
+        hop = 0.0
+        if t < 0.3:  # pop up on shot start
+            hop = 70 * math.sin(math.pi * t / 0.3)
+        if ti is not None and ti <= t <= ti + 0.4:  # jump on the impact word
+            hop = 90 * math.sin(math.pi * (t - ti) / 0.4)
+        x = W * c["x"] + cam[0]
+        fx.ground_shadow(frame, x, ground - 4, img.width * 0.55 * (1 - hop / 400), scene != "park_day")
+        frame.alpha_composite(img, (int(x - img.width / 2), int(ground - img.height + bob - hop)))
 
     if sp.get("_arm"):
         arm, pos = sp.pop("_arm")
@@ -359,7 +383,14 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
         paste_scaled(frame, art.pill(sp["kicker"], "kicker", 34), W / 2, 210, ease_pop((t - 0.0) / 0.2))
     if "label" in sp:
         lab = sp["label"]
-        paste_scaled(frame, art.pill(lab["text"], lab.get("color", "dark"), 46), W / 2, 310, ease_pop((t - 0.08) / 0.22))
+        paste_scaled(frame, art.pill(lab["text"], lab.get("color", "dark"), 46), W / 2, 310 - 50 * (1 - fx.ease_out((t - 0.08) / 0.25)), ease_pop((t - 0.08) / 0.22))
+    if "counter" in sp:
+        fx.counter(frame, sp["counter"], t, shot.dur, sp["counter"].get("y", 600))
+    bars_bottom = None
+    if "bars" in sp:
+        by = sp["bars"].get("y", 470)
+        fx.bars(frame, sp["bars"], t, by)
+        bars_bottom = by + len(sp["bars"]["rows"]) * 162 + 70
 
     if sp.get("countdown") and shot.countdown_at is not None:
         left = max(0.0, shot.countdown_at - gt)
@@ -368,7 +399,8 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
         img = art.pill(txt, "red" if left < 5 else "dark", 54)
         paste_scaled(frame, img, W / 2, 440, 1.0 + (0.06 * math.sin(gt * 12) if left < 5 else 0))
 
-    cap_y = (card_bottom + 110) if card_bottom else 820
+    cap_y = (card_bottom + 110) if card_bottom else (bars_bottom + 60 if bars_bottom else 820)
+    frame.alpha_composite(fx.vignette(0.5))
     caption(frame, shot.words, t, cap_y)
     out = frame.convert("RGB")
     if ti is not None and ti <= t <= ti + 0.35:  # screen shake + white flash
@@ -383,6 +415,17 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
 
 
 # ------------------------------------------------------------------ main
+
+WHIP = 0.24  # seconds for the slide between two different scenes
+
+
+def start_scene(sh):
+    return sh.spec.get("switch", {}).get("from", sh.spec["scene"])
+
+
+def end_scene(sh):
+    return sh.spec["scene"]
+
 
 def render(story_path: str, out_path: str, preview: float | None = None):
     story = json.load(open(story_path, encoding="utf-8"))
@@ -443,13 +486,19 @@ def render(story_path: str, out_path: str, preview: float | None = None):
             stdin=subprocess.PIPE,
         )
         frames = int(total * FPS)
-        idx = 0
+        idx, last, prev_last = 0, None, None
         for f in range(frames):
             gt = f / FPS
             while idx + 1 < len(shots) and gt >= shots[idx + 1].start:
                 idx += 1
+                prev_last = last
             sh = shots[idx]
-            ff.stdin.write(draw_frame(sh, gt - sh.start, gt).tobytes())
+            t = gt - sh.start
+            img = draw_frame(sh, t, gt)
+            last = img
+            if idx > 0 and prev_last is not None and t < WHIP and start_scene(sh) != end_scene(shots[idx - 1]):
+                img = fx.whip(prev_last, img, t / WHIP)
+            ff.stdin.write(img.tobytes())
         ff.stdin.close()
         ff.wait()
     return total
