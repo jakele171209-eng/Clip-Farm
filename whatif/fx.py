@@ -171,7 +171,13 @@ def counter(frame: Image.Image, spec: dict, t: float, dur: float, y: float = 600
     if spec.get("label"):
         d.text((W / 2, y - 120), spec["label"], font=lab, fill=(255, 255, 255), anchor="mm", stroke_width=6, stroke_fill=(10, 10, 16))
     bump = 1 + 0.04 * math.sin(t * 40) * (1 - k) * (k > 0)
-    fs = art.font(int(190 * bump))
+    base = spec.get("size", 190)
+    final = f"{b:,.{dec}f}".replace("-", "−") + spec.get("unit", "")
+    while art.font(base).getlength(final) > W - 90 and base > 60:
+        base -= 6
+    if k >= 1:  # landed: a quick punch
+        bump = 1 + 0.12 * max(0.0, 1 - (t - 0.25 - max(0.4, dur * spec.get("speed", 0.65))) / 0.2)
+    fs = art.font(int(base * bump))
     d.text((W / 2, y), txt, font=fs, fill=col, anchor="mm", stroke_width=14, stroke_fill=(10, 10, 16))
 
 
@@ -244,3 +250,93 @@ def chapter(frame: Image.Image, spec: dict, t: float, y: float):
         size -= 6
     d.text((W / 2 + (1 - k) * 200, y + 30), title, font=art.font(size), fill=(255, 255, 255), anchor="mm",
            stroke_width=8, stroke_fill=(10, 10, 16))
+
+
+# ---------------------------------------------------------------- dopamine kit
+
+def explosion(frame: Image.Image, x: float, y: float, k: float, size: float = 1.0):
+    """Expanding fireball + shock ring + debris. k goes 0..1 over the blast."""
+    if not 0 <= k <= 1:
+        return
+    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    R = (120 + 900 * ease_out(k)) * size
+    d.ellipse([x - R, y - R, x + R, y + R], outline=(255, 255, 255, int(220 * (1 - k))), width=int(30 * (1 - k)) + 2)
+    for r, col in ((0.75, (255, 120, 40)), (0.55, (255, 190, 70)), (0.32, (255, 250, 210))):
+        rr = R * r * (1 - 0.3 * k)
+        d.ellipse([x - rr, y - rr, x + rr, y + rr], fill=(*col, int(235 * (1 - k ** 2))))
+    rnd = random.Random(int(x + y))
+    for _ in range(26):
+        a = rnd.uniform(0, math.tau)
+        dist = R * rnd.uniform(0.6, 1.3)
+        px, py = x + math.cos(a) * dist, y + math.sin(a) * dist
+        s = rnd.uniform(8, 22) * (1 - k)
+        d.rectangle([px - s, py - s, px + s, py + s], fill=(60, 40, 40, int(255 * (1 - k))))
+    frame.alpha_composite(layer.filter(ImageFilter.GaussianBlur(2)))
+
+
+def notification(frame: Image.Image, spec: dict, t: float, top: float = 120):
+    """Phone push notification that drops in from the top and wobbles."""
+    k = ease_out((t - spec.get("at", 0.15)) / 0.35)
+    if k <= 0:
+        return
+    w = min(W - 120, 900)
+    h = 190
+    card = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(card)
+    d.rounded_rectangle([0, 0, w - 1, h - 1], radius=40, fill=(248, 248, 252, 245))
+    d.rounded_rectangle([28, 34, 98, 104], radius=18, fill=tuple(spec.get("color", (60, 200, 120))))
+    d.text((63, 69), spec.get("icon", "★"), font=art.font(40), fill=(255, 255, 255), anchor="mm")
+    d.text((122, 50), spec.get("app", "FITNESS").upper(), font=art.font(26, "semi"), fill=(120, 124, 140), anchor="lm")
+    d.text((w - 30, 50), "now", font=art.font(26, "semi"), fill=(140, 144, 160), anchor="rm")
+    d.text((122, 96), spec["title"], font=art.font(40), fill=(20, 22, 30), anchor="lm")
+    d.text((122, 146), spec.get("body", ""), font=art.font(32, "semi"), fill=(70, 74, 90), anchor="lm")
+    y = top - (1 - k) * 260
+    frame.alpha_composite(card, (int(W / 2 - w / 2), int(y)))
+
+
+def slam(frame: Image.Image, spec: dict, t: float, y: float):
+    """A giant word or number that slams into the screen."""
+    at = spec.get("at", 0.0)
+    if t < at:
+        return
+    k = min(1.0, (t - at) / 0.18)
+    s = 2.4 - 1.4 * ease_out(k)
+    txt = spec["text"]
+    size = spec.get("size", 170)
+    while art.font(size).getlength(txt) > W - 100 and size > 60:
+        size -= 8
+    f = art.font(max(20, int(size * s)))
+    col = {"red": (255, 70, 60), "gold": (255, 214, 64), "white": (255, 255, 255), "green": (90, 230, 120),
+           "blue": (130, 200, 255)}.get(spec.get("color", "gold"), (255, 214, 64))
+    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    d.text((W / 2, y), txt, font=f, fill=(*col, int(255 * min(1, k * 2))), anchor="mm",
+           stroke_width=max(4, int(14 * s)), stroke_fill=(10, 10, 16, int(255 * min(1, k * 2))))
+    if spec.get("sub"):
+        d.text((W / 2, y + size * 0.75), spec["sub"], font=art.font(44), fill=(255, 255, 255, int(255 * k)), anchor="mm",
+               stroke_width=6, stroke_fill=(10, 10, 16, int(255 * k)))
+    frame.alpha_composite(layer)
+
+
+def laps(frame: Image.Image, spec: dict, t: float, dur: float, cx: float, cy: float, r: float):
+    """A glowing trail circling the Earth `n` times, with a lap counter."""
+    n = spec.get("n", 4)
+    k = ease_in_out((t - 0.2) / max(0.5, dur * 0.7))
+    total = n * 360 * k
+    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    for lap in range(int(total // 360) + 1):
+        span = min(360, total - lap * 360)
+        if span <= 0:
+            break
+        rr = r + lap * 26
+        d.arc([cx - rr, cy - rr * 0.45, cx + rr, cy + rr * 0.45], -90, -90 + span, fill=(255, 214, 64, 230), width=10)
+    a = math.radians(-90 + total % 360)
+    rr = r + int(total // 360) * 26
+    px, py = cx + math.cos(a) * rr, cy + math.sin(a) * rr * 0.45
+    d.ellipse([px - 18, py - 18, px + 18, py + 18], fill=(255, 255, 255, 255))
+    frame.alpha_composite(layer.filter(ImageFilter.GaussianBlur(1)))
+    lap_txt = f"LAP {min(n, int(total // 360) + 1)}/{n}" if k < 1 else f"{n} LAPS"
+    ImageDraw.Draw(frame).text((W / 2, cy - r * 0.45 - 120), lap_txt, font=art.font(70), fill=(255, 214, 64), anchor="mm",
+                               stroke_width=10, stroke_fill=(10, 10, 16))

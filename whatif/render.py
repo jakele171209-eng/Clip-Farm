@@ -91,6 +91,8 @@ def chunks(words, max_words=3, max_chars=15):
 def music_bed(seconds: float, mood: str = "light") -> np.ndarray:
     if mood == "tense":
         return tense_bed(seconds)
+    if mood == "hype":
+        return hype_bed(seconds)
     return light_bed(seconds)
 
 
@@ -205,12 +207,101 @@ def whoosh(at: float, buf: np.ndarray):
     buf[i0:i0 + m] += noise * env * 0.18
 
 
+def riser(end: float, buf: np.ndarray, length: float = 0.7):
+    """Rising noise sweep that ends exactly on a hit."""
+    i1 = int(end * SR)
+    m = int(length * SR)
+    i0 = i1 - m
+    if i0 < 0 or i1 > len(buf):
+        return
+    pt = np.arange(m) / SR
+    rng = np.random.default_rng(3)
+    noise = rng.standard_normal(m)
+    k = max(2, 30)
+    noise = np.convolve(noise, np.ones(k) / k, mode="same") * 3
+    tone = np.sin(2 * np.pi * (200 * pt + 900 * pt ** 2 / length))
+    env = (pt / length) ** 2
+    buf[i0:i1] += (noise * 0.10 + tone * 0.05) * env
+
+
+def ding(at: float, buf: np.ndarray):
+    i0 = int(at * SR)
+    m = int(0.6 * SR)
+    if i0 + m > len(buf):
+        return
+    pt = np.arange(m) / SR
+    buf[i0:i0 + m] += (np.sin(2 * np.pi * 1568 * pt) + 0.6 * np.sin(2 * np.pi * 2093 * pt)) * np.exp(-pt * 7) * 0.12
+
+
+def hit(at: float, buf: np.ndarray):
+    """Short punchy bass hit for slams and numbers landing."""
+    i0 = int(at * SR)
+    m = int(0.35 * SR)
+    if i0 + m > len(buf):
+        return
+    pt = np.arange(m) / SR
+    rng = np.random.default_rng(4)
+    buf[i0:i0 + m] += (np.sin(2 * np.pi * (45 + 120 * np.exp(-pt * 30)) * pt) * np.exp(-pt * 9) * 0.6
+                       + rng.standard_normal(m) * np.exp(-pt * 60) * 0.25)
+
+
+def hype_bed(seconds: float, bpm: float = 128) -> np.ndarray:
+    """Driving drum loop + bass pulse: kick on every beat, clap on 2 and 4, 16th hats. Generated."""
+    n = int(seconds * SR)
+    out = np.zeros(n, dtype=np.float32)
+    beat = 60 / bpm
+    rng = np.random.default_rng(5)
+    km = int(0.25 * SR)
+    kt = np.arange(km) / SR
+    kick = np.sin(2 * np.pi * (50 + 100 * np.exp(-kt * 35)) * kt) * np.exp(-kt * 12) * 0.32
+    hm = int(0.04 * SR)
+    hat = rng.standard_normal(hm) * np.exp(-np.arange(hm) / SR * 120) * 0.035
+    cm = int(0.15 * SR)
+    clap = rng.standard_normal(cm) * np.exp(-np.arange(cm) / SR * 30) * 0.10
+    bass_notes = [41, 41, 44, 39]  # F, F, Ab, Eb
+    b = 0
+    while b * beat < seconds:
+        i = int(b * beat * SR)
+        if i + km < n:
+            out[i:i + km] += kick
+        if b % 2 == 1 and i + cm < n:
+            out[i:i + cm] += clap
+        for q in range(4):
+            j = int((b + q / 4) * beat * SR)
+            if j + hm < n:
+                out[j:j + hm] += hat * (1.3 if q == 2 else 0.7)
+        f = 440 * 2 ** ((bass_notes[(b // 4) % 4] - 69) / 12)
+        bm = int(beat * 0.9 * SR)
+        if i + bm < n:
+            bt = np.arange(bm) / SR
+            out[i + int(0.5 * beat * SR) - int(0.5 * beat * SR):i + bm] += 0  # keep kick clear
+            off = i + int(beat * 0.5 * SR)
+            seg = min(n - off, int(beat * 0.45 * SR))
+            if seg > 0:
+                st = np.arange(seg) / SR
+                out[off:off + seg] += np.sign(np.sin(2 * np.pi * f * st)) * np.exp(-st * 8) * 0.05
+        b += 1
+    return out
+
+
 def word_time(shot, word: str, default: float | None = None) -> float | None:
     key = word.lower()
     for w, t0, t1 in shot.words:
         if re.sub(r"[^\w]", "", w.lower()) == key:
             return t0
     return default
+
+
+def slam_at(shot) -> float:
+    sl = shot.spec["slam"]
+    if sl.get("word"):
+        return word_time(shot, sl["word"], sl.get("at", 0.1))
+    return sl.get("at", 0.1)
+
+
+def blast_at(shot) -> float:
+    bl = shot.spec["blast"]
+    return word_time(shot, bl.get("word", ""), shot.dur * bl.get("at", 0.4))
 
 
 def impact_time(shot) -> float | None:
@@ -368,6 +459,9 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
                 dd.line([(ex - 200 - k * 60, ey - 60 + k * 24), (ex - 120 - k * 60, ey - 60 + k * 24)], fill=(160, 190, 255, 160), width=6)
         frame.alpha_composite(e, (int(ex - e.width / 2), int(ey - e.height / 2)))
 
+    if "laps" in sp and "earth" in sp:
+        fx.laps(frame, sp["laps"], t, shot.dur, W * sp["earth"].get("x", 0.5), sp["earth"].get("y", 1150), sp["laps"].get("r", 260))
+
     if sp.get("speedlines"):
         frame.alpha_composite(art.speedlines(gt))
 
@@ -410,8 +504,15 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
         if ti is not None and ti <= t <= ti + 0.4:  # jump on the impact word
             hop = 90 * math.sin(math.pi * (t - ti) / 0.4)
         x = W * c["x"] + cam[0]
+        if "to" in c:  # dash across the screen
+            x += (W * c["to"] - W * c["x"]) * fx.ease_in_out(t / max(0.3, shot.dur * c.get("over", 0.6)))
         fx.ground_shadow(frame, x, ground - 4, img.width * 0.55 * (1 - hop / 400), scene != "park_day")
         frame.alpha_composite(img, (int(x - img.width / 2), int(ground - img.height + bob - hop)))
+
+    if "blast" in sp:
+        bl = sp["blast"]
+        tb = word_time(shot, bl.get("word", ""), shot.dur * bl.get("at", 0.4))
+        fx.explosion(frame, W * bl.get("x", 0.5), bl.get("y", H * 0.55), (t - tb) / bl.get("len", 1.1), bl.get("size", 1.0))
 
     if sp.get("_arm"):
         arm, pos = sp.pop("_arm")
@@ -429,6 +530,10 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
     if "label" in sp:
         lab = sp["label"]
         paste_scaled(frame, art.pill(lab["text"], lab.get("color", "dark"), 46), W / 2, LAY["label"] - 50 * (1 - fx.ease_out((t - 0.08) / 0.25)), ease_pop((t - 0.08) / 0.22))
+    if "notif" in sp:
+        fx.notification(frame, sp["notif"], t, sp["notif"].get("y", LAY["label"] + 60))
+    if "slam" in sp:
+        fx.slam(frame, {**sp["slam"], "at": slam_at(shot)}, t, sp["slam"].get("y", 620))
     if "counter" in sp:
         fx.counter(frame, sp["counter"], t, shot.dur, sp["counter"].get("y", 600))
     bars_bottom = None
@@ -540,7 +645,21 @@ def render(story_path: str, out_path: str, preview: float | None = None):
                 k += 0.5
         ti = impact_time(sh)
         if ti is not None:
+            if sh.spec["impact"].get("riser"):
+                riser(sh.start + ti, mix)
             boom(sh.start + ti, mix)
+        if "blast" in sh.spec:
+            tb = blast_at(sh)
+            riser(sh.start + tb, mix, 0.9)
+            boom(sh.start + tb, mix)
+            boom(sh.start + tb + 0.05, mix)
+        if "slam" in sh.spec:
+            hit(sh.start + slam_at(sh), mix)
+        if "notif" in sh.spec:
+            ding(sh.start + sh.spec["notif"].get("at", 0.15) + 0.2, mix)
+        if "counter" in sh.spec:
+            c = sh.spec["counter"]
+            hit(sh.start + 0.25 + max(0.4, sh.dur * c.get("speed", 0.65)), mix)
         if "label" in sh.spec or "card" in sh.spec:
             pop(sh.start + 0.08, mix, 900)
         if "card" in sh.spec and not sh.spec["card"].get("alert"):

@@ -1,0 +1,376 @@
+{
+ "title": "What if every step you'll ever take happened at once?",
+ "format": "vertical",
+ "voice": "am_michael",
+ "speed": 1.22,
+ "gap": 0.05,
+ "music": "hype",
+ "sources": [
+  "Assumptions stated on screen: 7,500 steps a day for 80 years = 219 million steps; 0.76 m average stride = ~166,000 km.",
+  "Earth's circumference 40,075 km; speed of light 299,792 km/s.",
+  "NASA: Parker Solar Probe reached ~191.7 km/s (Dec 2024), fastest human-made object: https://www.nasa.gov/missions/parker-solar-probe/",
+  "ISS orbital speed ~7.66 km/s (NASA). Rifle bullet ~1 km/s (Wikipedia, Muzzle velocity).",
+  "Randall Munroe, xkcd What If #1 'Relativistic Baseball' (air atoms fuse when hit at a large fraction of light speed): https://what-if.xkcd.com/1/"
+ ],
+ "shots": [
+  {
+   "text": "What if every step you'll ever take happened at once?",
+   "scene": "park_day",
+   "sun": {
+    "x": 0.8,
+    "y": 330
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "happy",
+     "scale": 1.15
+    }
+   ],
+   "slam": {
+    "text": "ALL AT ONCE",
+    "word": "once",
+    "color": "gold",
+    "y": 560
+   }
+  },
+  {
+   "text": "You take about 7,500 steps a day.",
+   "say": "You take about seven thousand five hundred steps a day.",
+   "scene": "park_day",
+   "sun": {
+    "x": 0.8,
+    "y": 330
+   },
+   "counter": {
+    "from": 0,
+    "to": 7500,
+    "unit": "",
+    "label": "STEPS PER DAY",
+    "shift": false,
+    "y": 560,
+    "speed": 0.5
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.2,
+     "mood": "calm",
+     "to": 0.8,
+     "over": 0.9
+    }
+   ]
+  },
+  {
+   "text": "For 80 years.",
+   "say": "For eighty years.",
+   "scene": "mind",
+   "counter": {
+    "from": 7500,
+    "to": 219000000,
+    "unit": "",
+    "label": "LIFETIME STEPS",
+    "shift": false,
+    "y": 560,
+    "speed": 0.55
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "shock"
+    }
+   ]
+  },
+  {
+   "text": "That's 166,000 kilometres of walking.",
+   "say": "That's a hundred and sixty six thousand kilometres of walking.",
+   "scene": "mind",
+   "slam": {
+    "text": "166,000 KM",
+    "word": "kilometres",
+    "color": "white",
+    "y": 560
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "worried"
+    }
+   ]
+  },
+  {
+   "text": "Enough to walk around the entire Earth, four times.",
+   "scene": "space",
+   "earth": {
+    "x": 0.5,
+    "y": 1280
+   },
+   "laps": {
+    "n": 4,
+    "r": 250
+   },
+   "cast": []
+  },
+  {
+   "text": "Now you take them all. In one second.",
+   "scene": "park_day",
+   "sun": {
+    "x": 0.8,
+    "y": 330
+   },
+   "slam": {
+    "text": "1 SECOND",
+    "word": "second",
+    "color": "red",
+    "y": 560
+   },
+   "impact": {
+    "word": "second",
+    "flash": "white",
+    "shake": 0.7,
+    "riser": true
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "shock",
+     "scale": 1.1
+    }
+   ]
+  },
+  {
+   "text": "Your shoes do not make it. Your coffee somehow does.",
+   "scene": "park_day",
+   "sun": {
+    "x": 0.8,
+    "y": 330
+   },
+   "impact": {
+    "word": "shoes",
+    "text": "POOF!",
+    "x": 0.5,
+    "y": 1500,
+    "shake": 0.3
+   },
+   "label": {
+    "text": "COFFEE: STILL HOT",
+    "color": "gold"
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "awkward"
+    }
+   ]
+  },
+  {
+   "text": "You're doing 166,000 kilometres per second.",
+   "say": "You're doing a hundred and sixty six thousand kilometres. Per second.",
+   "scene": "space",
+   "bars": {
+    "title": "SPEED (KM PER SECOND)",
+    "y": 420,
+    "rows": [
+     {
+      "name": "RIFLE BULLET",
+      "value": 1,
+      "unit": ""
+     },
+     {
+      "name": "SPACE STATION",
+      "value": 7.7,
+      "unit": "",
+      "decimals": 1
+     },
+     {
+      "name": "FASTEST SPACECRAFT EVER",
+      "value": 192,
+      "unit": ""
+     },
+     {
+      "name": "YOU",
+      "value": 166000,
+      "unit": "",
+      "hl": true
+     }
+    ]
+   },
+   "cast": []
+  },
+  {
+   "text": "That's over half the speed of light.",
+   "scene": "space",
+   "slam": {
+    "text": "55% LIGHT SPEED",
+    "word": "light",
+    "color": "blue",
+    "y": 700
+   },
+   "speedlines": true,
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.15,
+     "mood": "shock",
+     "to": 0.85,
+     "over": 0.8
+    }
+   ]
+  },
+  {
+   "text": "You just lapped the fastest spacecraft ever built, eight hundred times.",
+   "scene": "space",
+   "label": {
+    "text": "NASA: HUMILIATED",
+    "color": "red"
+   },
+   "speedlines": true,
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "smug"
+    }
+   ]
+  },
+  {
+   "text": "One problem. The air can't get out of your way.",
+   "scene": "park_day",
+   "sun": {
+    "x": 0.8,
+    "y": 330
+   },
+   "speedlines": true,
+   "label": {
+    "text": "AIR: IN THE WAY",
+    "color": "dark"
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.2,
+     "mood": "worried",
+     "to": 0.7,
+     "over": 0.9
+    }
+   ]
+  },
+  {
+   "text": "Air atoms hit you so hard, they start fusing. Like a tiny sun.",
+   "scene": "park_day",
+   "sun": {
+    "x": 0.8,
+    "y": 330
+   },
+   "label": {
+    "text": "YOU: NUCLEAR",
+    "color": "red"
+   },
+   "impact": {
+    "word": "fusing",
+    "flash": "white",
+    "shake": 0.4
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "shock"
+    }
+   ]
+  },
+  {
+   "text": "Boom.",
+   "scene": "park_dark",
+   "blast": {
+    "word": "boom",
+    "x": 0.5,
+    "y": 1050,
+    "size": 1.3,
+    "len": 1.4
+   },
+   "impact": {
+    "word": "boom",
+    "flash": "white",
+    "shake": 1.2
+   },
+   "cast": []
+  },
+  {
+   "text": "The coffee does not make it.",
+   "scene": "park_dark",
+   "label": {
+    "text": "COFFEE: GONE",
+    "color": "red"
+   },
+   "cast": []
+  },
+  {
+   "text": "But somewhere, your phone buzzes.",
+   "scene": "mind",
+   "notif": {
+    "app": "Fitness",
+    "title": "Step goal smashed!",
+    "body": "219,000,000 steps today. New record.",
+    "icon": "★",
+    "at": 0.6
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "shock"
+    }
+   ]
+  },
+  {
+   "text": "Achievement unlocked. You never have to walk again.",
+   "scene": "mind",
+   "notif": {
+    "app": "Fitness",
+    "title": "Achievement unlocked",
+    "body": "Never walk again (lifetime).",
+    "icon": "★",
+    "at": 0.0
+   },
+   "slam": {
+    "text": "GOAL: DONE FOR LIFE",
+    "word": "never",
+    "color": "green",
+    "y": 1120
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "happy"
+    }
+   ]
+  },
+  {
+   "text": "Send this to the friend who brags about their step count.",
+   "scene": "park_day",
+   "sun": {
+    "x": 0.8,
+    "y": 330
+   },
+   "label": {
+    "text": "SEND TO YOUR STEP-COUNT FRIEND",
+    "color": "gold"
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "happy",
+     "scale": 1.1
+    }
+   ]
+  }
+ ]
+}
