@@ -51,7 +51,6 @@
         "x": 0.72,
         "y": 430
       },
-      "tick": true,
       "countdown": true,
       "cast": [
         {
@@ -73,7 +72,6 @@
         "x": 0.5,
         "y": 1150
       },
-      "tick": true,
       "cast": [],
       "countdown": true
     },
@@ -270,7 +268,6 @@
         "x": 0.72,
         "y": 430
       },
-      "tick": true,
       "cast": [
         {
           "who": "hero",
