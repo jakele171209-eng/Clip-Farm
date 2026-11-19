@@ -297,7 +297,7 @@ def character(who: str, mood: str, blink: bool = False, scale: float = 1.0) -> I
         x = cx + sx * ex
         if who == "hero_shrimp":  # stalk eyes are drawn after, on a taller canvas
             continue
-        if blink or mood in ("happy", "smug"):
+        if blink or mood in ("happy", "smug", "asleep"):
             if mood == "happy" and not blink:
                 d.arc([x - er, ey - er * 0.6, x + er, ey + er * 1.2], 200, 340, fill=ink, width=7 * SS)
             else:
@@ -330,6 +330,11 @@ def character(who: str, mood: str, blink: bool = False, scale: float = 1.0) -> I
         d.arc([cx - 26 * SS, my, cx + 26 * SS, my + 30 * SS], 200, 340, fill=ink, width=7 * SS)
     elif mood == "awkward":
         d.line([(cx - 28 * SS, my + 6 * SS), (cx - 8 * SS, my), (cx + 10 * SS, my + 8 * SS), (cx + 28 * SS, my + 2 * SS)], fill=ink, width=6 * SS)
+    elif mood == "asleep":  # little open mouth + floating z's
+        d.ellipse([cx - 10 * SS, my - 4 * SS, cx + 10 * SS, my + 14 * SS], fill=ink)
+        for k, (zx, zy, zs) in enumerate(((112, -100, 40), (150, -140, 50), (185, -172, 60))):
+            d.text((cx + zx * SS, hy + zy * SS), "z", font=font(zs * SS), fill=(250, 250, 255), anchor="mm",
+                   stroke_width=4 * SS, stroke_fill=ink)
     else:  # calm / flat
         d.line([(cx - 22 * SS, my + 6 * SS), (cx + 22 * SS, my + 6 * SS)], fill=ink, width=7 * SS)
     if mood == "awkward":  # sweat drop
