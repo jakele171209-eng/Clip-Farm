@@ -145,6 +145,8 @@ def background(scene: str) -> Image.Image:
         return _down(_rooftop(bw, bh))
     if scene == "street_night":
         return _down(_street(bw, bh))
+    if scene in ("mars", "mars_dusk"):
+        return _down(_mars(bw, bh, scene == "mars_dusk"))
 
     p = PALETTES[scene]
     img = _gradient((bw, bh), *p["sky"])
@@ -1004,4 +1006,36 @@ def _street(bw, bh):
         d.ellipse([x - 22 * u, bh * 0.34 - 22 * u, x + 22 * u, bh * 0.34 + 22 * u], fill=(255, 230, 170))
         _glow(img, x, bh * 0.36, 260 * u, (255, 200, 120), 90)
         d = ImageDraw.Draw(img)
+    return img
+
+
+def _mars(bw, bh, dusk: bool):
+    """Dusty butterscotch sky by day; at sunset the sky around the Sun turns blue."""
+    u = min(bw, bh) / 1000
+    horizon = bh * 0.58
+    if dusk:
+        img = _gradient((bw, bh), (40, 32, 50), (150, 110, 90))
+        _glow(img, bw * 0.5, horizon - 40 * u, 520 * u, (120, 170, 230), 200)
+        d = ImageDraw.Draw(img)
+        d.ellipse([bw * 0.5 - 40 * u, horizon - 80 * u, bw * 0.5 + 40 * u, horizon], fill=(230, 240, 255))
+    else:
+        img = _gradient((bw, bh), (196, 140, 96), (236, 190, 140))
+        d = ImageDraw.Draw(img)
+        _glow(img, bw * 0.72, bh * 0.2, 160 * u, (255, 240, 210), 160)
+        d = ImageDraw.Draw(img)
+        d.ellipse([bw * 0.72 - 45 * u, bh * 0.2 - 45 * u, bw * 0.72 + 45 * u, bh * 0.2 + 45 * u], fill=(255, 248, 230))
+    rnd = random.Random(14)
+    for i, col in enumerate(((150, 80, 52), (124, 62, 40))):  # two ridges
+        pts = [(0, bh)]
+        for k in range(41):
+            x = bw * k / 40
+            pts.append((x, horizon - 90 * u + i * 60 * u - abs(math.sin(k * 0.37 + i)) * 120 * u))
+        pts.append((bw, bh))
+        d.polygon(pts, fill=col if not dusk else _lerp(col, (30, 26, 40), 0.5))
+    ground = (168, 86, 50) if not dusk else (90, 56, 50)
+    d.rectangle([0, horizon + 40 * u, bw, bh], fill=ground)
+    for _ in range(60):  # rocks
+        x, y = rnd.uniform(0, bw), rnd.uniform(horizon + 60 * u, bh)
+        r = rnd.uniform(8, 40) * u * (0.5 + (y - horizon) / bh)
+        d.ellipse([x - r, y - r * 0.6, x + r, y + r * 0.6], fill=_lerp(ground, (40, 20, 16), 0.35))
     return img
