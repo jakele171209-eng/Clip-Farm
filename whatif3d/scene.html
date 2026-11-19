@@ -1,0 +1,223 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const W = 1080, H = 1920;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.45;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a1022);
+scene.fog = new THREE.FogExp2(0x0d1630, 0.012);
+const camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 600);
+
+// deterministic random
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+// ---------- lights ----------
+scene.add(new THREE.HemisphereLight(0x4a64a8, 0x0b0b14, 0.8));
+const moon = new THREE.DirectionalLight(0x9db8ff, 1.6);
+moon.position.set(-60, 90, -80); moon.castShadow = true;
+moon.shadow.mapSize.set(2048, 2048);
+Object.assign(moon.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, far: 300 });
+scene.add(moon);
+const moonDisc = new THREE.Mesh(new THREE.SphereGeometry(9, 32, 16), new THREE.MeshBasicMaterial({ color: 0xdfe8ff }));
+moonDisc.position.set(-60, 150, -300); scene.add(moonDisc);
+
+// ---------- ground and street ----------
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: 0x15171f, roughness: 0.35, metalness: 0.3 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+const road = new THREE.Mesh(new THREE.PlaneGeometry(14, 800), new THREE.MeshStandardMaterial({ color: 0x0c0d12, roughness: 0.15, metalness: 0.5 }));
+road.rotation.x = -Math.PI / 2; road.position.y = 0.01; road.receiveShadow = true; scene.add(road);
+for (let z = -390; z < 390; z += 8) {
+  const d = new THREE.Mesh(new THREE.PlaneGeometry(0.25, 3), new THREE.MeshBasicMaterial({ color: 0x8a8060 }));
+  d.rotation.x = -Math.PI / 2; d.position.set(0, 0.02, z); scene.add(d);
+}
+
+// ---------- city: buildings with window grids ----------
+const windows = []; // {mesh, off}
+const winGeo = new THREE.PlaneGeometry(0.9, 1.2);
+function building(x, z, w, d, h, facing, keep) {
+  if (!keep && facing === 1 && z + d / 2 > -15 && z - d / 2 < 3) return;
+  const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshStandardMaterial({ color: 0x1b1f2c, roughness: 0.8 }));
+  b.position.set(x, h / 2, z); b.castShadow = b.receiveShadow = true; scene.add(b);
+  const cols = Math.floor(d / 2.2), rows = Math.floor(h / 3);
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    if (rnd() < 0.35) continue;
+    const warm = rnd() < 0.8;
+    const m = new THREE.MeshBasicMaterial({ color: warm ? 0xffb35c : 0x8fc8ff });
+    const win = new THREE.Mesh(winGeo, m);
+    win.position.set(x + facing * (w / 2 + 0.02), 2 + r * 3, z - d / 2 + 1.2 + c * 2.2);
+    win.rotation.y = facing * Math.PI / 2;
+    scene.add(win);
+    windows.push({ mesh: win, base: m.color.clone(), off: 0.6 + rnd() * 3.6 });
+  }
+}
+for (let z = -360; z < 60; z += 0) {
+  const d = 10 + rnd() * 12;
+  building(-14 - rnd() * 4, z + d / 2, 10, d, 14 + rnd() * 40, 1);
+  z += d + 1.5;
+}
+for (let z = -360; z < 60; z += 0) {
+  const d = 10 + rnd() * 12;
+  building(14 + rnd() * 4, z + d / 2, 10, d, 14 + rnd() * 40, -1);
+  z += d + 1.5;
+}
+building(-17, -6, 10, 16, 30, 1, true);
+// far towers
+for (let i = 0; i < 40; i++) {
+  const h = 40 + rnd() * 90;
+  const b = new THREE.Mesh(new THREE.BoxGeometry(14, h, 14), new THREE.MeshStandardMaterial({ color: 0x141826 }));
+  b.position.set((rnd() - 0.5) * 300, h / 2, -200 - rnd() * 200); scene.add(b);
+}
+
+// ---------- street lamps ----------
+const lampLights = [];
+for (let z = -100; z <= 20; z += 30) for (const s of [-1, 1]) {
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 7), new THREE.MeshStandardMaterial({ color: 0x222 }));
+  pole.position.set(s * 7.5, 3.5, z); scene.add(pole);
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.35), new THREE.MeshBasicMaterial({ color: 0xffd9a0 }));
+  bulb.position.set(s * 6.6, 7, z); scene.add(bulb);
+  const L = new THREE.PointLight(0xffb070, 30, 22, 1.6); L.position.copy(bulb.position); scene.add(L); lampLights.push(L);
+}
+
+// ---------- low-poly people ----------
+const skin = new THREE.MeshStandardMaterial({ color: 0x9a7560, roughness: 0.6 });
+const pants = new THREE.MeshStandardMaterial({ color: 0x1c1f2a, roughness: 0.8 });
+function person(coat = 0x30364a) {
+  const g = new THREE.Group();
+  const mat = new THREE.MeshStandardMaterial({ color: coat, roughness: 0.7 });
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.24, 0.62, 4, 12), mat); body.position.y = 1.38; body.scale.z = 0.7; g.add(body);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 12), skin); head.position.y = 1.98; head.scale.y = 1.2;
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.07, 0.14), skin); neck.position.y = 1.8; g.add(neck); g.add(head);
+  const legL = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.78, 4, 8), pants); legL.position.set(-0.11, 0.48, 0); g.add(legL);
+  const legR = legL.clone(); legR.position.x = 0.11; g.add(legR);
+  const armL = new THREE.Group(); armL.position.set(-0.31, 1.66, 0); g.add(armL);
+  const aL = new THREE.Mesh(new THREE.CapsuleGeometry(0.07, 0.6, 4, 8), mat); aL.position.y = -0.36; armL.add(aL);
+  const armR = new THREE.Group(); armR.position.set(0.31, 1.66, 0); g.add(armR);
+  const aR = aL.clone(); armR.add(aR);
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  g.userData = { body, head, armL, armR };
+  return g;
+}
+// sleepers on the sidewalk / street, slumped at various angles
+const sleepers = [];
+for (let i = 0; i < 18; i++) {
+  const p = person([0x3a2f2f, 0x2f3a4a, 0x2f4031, 0x45403a][i % 4]);
+  const x = (rnd() < 0.5 ? -1 : 1) * (1 + rnd() * 7), z = -38 + rnd() * 30;
+  p.position.set(x, 0, z); p.rotation.y = rnd() * 6.28;
+  p.userData.fall = 0.8 + rnd() * 3.5; p.userData.dir = rnd() < 0.5 ? 1 : -1;
+  scene.add(p); sleepers.push(p);
+}
+// stopped cars with headlights
+function car(x, z, col) {
+  const g = new THREE.Group();
+  const m = new THREE.MeshStandardMaterial({ color: col, roughness: 0.3, metalness: 0.6 });
+  const base = new THREE.Mesh(new THREE.BoxGeometry(2, 0.8, 4.4), m); base.position.y = 0.6; g.add(base);
+  const top = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.7, 2.2), m); top.position.set(0, 1.3, -0.2); g.add(top);
+  for (const s of [-0.7, 0.7]) {
+    const hl = new THREE.Mesh(new THREE.CircleGeometry(0.18, 12), new THREE.MeshBasicMaterial({ color: 0xffffee }));
+    hl.position.set(s, 0.65, 2.21); g.add(hl);
+    const tl = new THREE.Mesh(new THREE.CircleGeometry(0.15, 12), new THREE.MeshBasicMaterial({ color: 0xff2020 }));
+    tl.position.set(s, 0.7, -2.21); tl.rotation.y = Math.PI; g.add(tl);
+  }
+  const beam = new THREE.SpotLight(0xfff2d0, 60, 30, 0.5, 0.6, 1.5); beam.position.set(0, 0.7, 2.3);
+  beam.target.position.set(0, 0, 12); // beam removed (blew out the frame)
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  g.position.set(x, 0, z); scene.add(g); return g;
+}
+car(-3, -20, 0x7a1f1f); const car2 = car(3.2, -45, 0x2a3f6a); car2.rotation.y = Math.PI + 0.3;
+car(-3, -30, 0xb0b0b0).rotation.y = 0.5;
+
+// ---------- the hero ("you") and the waving stranger ----------
+const hero = person(0x2f7f86); // teal jacket // orange jacket
+hero.position.set(0, 0, 12); hero.rotation.y = Math.PI; scene.add(hero);
+// hero beanie
+const beanie = new THREE.Mesh(new THREE.SphereGeometry(0.165, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xe0782a }));
+beanie.position.y = 2.02; hero.add(beanie);
+
+// one apartment window across the street that lights up late
+const lateWin = new THREE.Mesh(new THREE.PlaneGeometry(3, 3.6), new THREE.MeshBasicMaterial({ color: 0x000000 }));
+lateWin.position.set(-11.97, 10, -6); lateWin.rotation.y = Math.PI / 2; scene.add(lateWin);
+const lateLight = new THREE.PointLight(0xffc27a, 0, 20, 1.5); lateLight.position.set(-11, 10, -6); scene.add(lateLight);
+const stranger = person(0x111111);
+stranger.position.set(-11.85, 7.4, -6); stranger.rotation.y = Math.PI / 2; stranger.scale.setScalar(1.3);
+stranger.traverse(o => { if (o.isMesh) o.material = new THREE.MeshBasicMaterial({ color: 0x05050a }); });
+stranger.visible = false; scene.add(stranger);
+
+// ---------- dust / fog particles ----------
+const pts = new THREE.BufferGeometry(); const N = 1500; const arr = new Float32Array(N * 3);
+for (let i = 0; i < N; i++) { arr[i * 3] = (rnd() - 0.5) * 40; arr[i * 3 + 1] = rnd() * 25; arr[i * 3 + 2] = -80 + rnd() * 110; }
+pts.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+const dust = new THREE.Points(pts, new THREE.PointsMaterial({ color: 0x8fa6d8, size: 0.08, transparent: true, opacity: 0.6 }));
+scene.add(dust);
+
+// ---------- post ----------
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), 0.7, 0.5, 0.6));
+composer.addPass(new OutputPass());
+
+// ---------- timeline ----------
+const ease = x => x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x);
+const lerp = (a, b, k) => a + (b - a) * k;
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+// shots: [start, end, camFrom, camTo, lookFrom, lookTo]
+const SHOTS = [
+  [0, 5.2, V(0, 48, 95), V(0, 30, 55), V(0, 22, -120), V(0, 14, -100)],     // aerial: city lights die
+  [5.2, 8.6, V(6, 1.5, -6), V(4, 1.1, -12), V(-3, 0.5, -26), V(-5, 0.4, -30)], // street: sleepers, stopped cars
+  [8.6, 11.5, V(1.6, 2.6, 19), V(1.0, 2.3, 16), V(0, 1.6, 0), V(0, 1.7, 0)], // behind hero: alone
+  [11.5, 18.5, V(1.4, 2.4, 15.5), V(-1, 6, 4), V(-12, 9, -6), V(-12.5, 10, -6)],   // push to the window
+];
+window.DURATION = 18.5;
+
+window.renderFrame = (t) => {
+  const s = SHOTS.find(s => t >= s[0] && t < s[1]) || SHOTS[SHOTS.length - 1];
+  const k = ease((t - s[0]) / (s[1] - s[0]));
+  camera.position.lerpVectors(s[2], s[3], k);
+  camera.lookAt(new THREE.Vector3().lerpVectors(s[4], s[5], k));
+  // subtle handheld
+  camera.position.x += Math.sin(t * 1.3) * 0.05; camera.position.y += Math.sin(t * 1.7) * 0.04;
+
+  // windows go dark: 3:12 AM, everyone falls asleep
+  for (const w of windows) {
+    const d = ease((t - w.off) / 0.15);
+    w.mesh.material.color.copy(w.base).multiplyScalar(1 - 0.96 * d);
+  }
+  const dark = ease((t - 1) / 3.5);
+  for (const L of lampLights) L.intensity = 30 * (1 - 0.35 * dark);
+
+  // sleepers slump forward
+  for (const p of sleepers) {
+    const f = ease((t - p.userData.fall) / 0.6);
+    p.rotation.x = p.userData.dir * f * 1.45;
+    p.position.y = 0.25 * f;
+    p.userData.head.position.z = 0.1 * f;
+  }
+  // hero: breathing, looks around
+  hero.userData.body.scale.y = 1 + 0.02 * Math.sin(t * 2.2);
+  hero.rotation.y = Math.PI + 0.35 * Math.sin(t * 0.8) * (t > 8.6 && t < 11.5 ? 1 : 0.2);
+
+  // the late window lights up at ~12.6s, stranger waves from ~13.6s
+  const on = ease((t - 14.2) / 0.25);
+  lateWin.material.color.setRGB(0.9 * on, 0.6 * on, 0.3 * on);
+  lateLight.intensity = 25 * on;
+  stranger.visible = t > 14.9;
+  stranger.userData.armR.rotation.z = t > 15.2 ? 2.6 + 0.5 * Math.sin((t - 15.2) * 8) : 0;
+
+  dust.position.y = -((t * 0.4) % 2);
+  composer.render();
+};
+window.ready = true;
+</script></body></html>
