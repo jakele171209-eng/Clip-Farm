@@ -150,7 +150,159 @@ def plate(name: str) -> Image.Image:
         d.text((bw * 0.72, bh * 0.6), "missed", font=font(SERIF, 34 * S2), fill=(30, 40, 60), anchor="mm")
         img = img.filter(ImageFilter.GaussianBlur(0.8))
         return img.resize((bw // S2, bh // S2), Image.LANCZOS)
+    return more_plates(name, bw, bh, rnd)
+
+
+def grad(bw, bh, top, bot):
+    g = np.linspace(0, 1, bh)[:, None, None]
+    arr = (np.array(top) + (np.array(bot) - np.array(top)) * g).astype(np.uint8)
+    return Image.fromarray(np.broadcast_to(arr, (bh, bw, 3)).copy())
+
+
+def skyline(d, bw, base, col, rnd, hmin, hmax, lit=0.0, win=(255, 196, 120)):
+    x = 0
+    while x < bw:
+        w = rnd.uniform(90, 240) * S2
+        h = rnd.uniform(hmin, hmax) * S2
+        d.rectangle([x, base - h, x + w, base], fill=col)
+        if lit:
+            for wy in range(int(base - h + 30 * S2), int(base - 20 * S2), int(46 * S2)):
+                for wx in range(int(x + 16 * S2), int(x + w - 30 * S2), int(40 * S2)):
+                    if rnd.random() < lit:
+                        d.rectangle([wx, wy, wx + 16 * S2, wy + 22 * S2], fill=win)
+        x += w + rnd.uniform(4, 20) * S2
+
+
+def more_plates(name, bw, bh, rnd):
+    if name == "bedroom":  # you, sitting up in bed; red alarm clock; window with a dead city
+        img = grad(bw, bh, (6, 8, 16), (14, 16, 26))
+        d = ImageDraw.Draw(img)
+        wx0, wy0, wx1, wy1 = bw * 0.48, bh * 0.2, bw * 0.92, bh * 0.55
+        win = grad(int(wx1 - wx0), int(wy1 - wy0), (18, 28, 52), (40, 56, 86))
+        img.paste(win, (int(wx0), int(wy0)))
+        d = ImageDraw.Draw(img)
+        skyline(d, bw, wy1, (10, 14, 22), rnd, 60, 220)
+        d.rectangle([0, 0, wx0, bh], fill=(6, 8, 16))
+        d.rectangle([wx1, 0, bw, bh], fill=(6, 8, 16))
+        d.rectangle([0, wy1, bw, bh], fill=(6, 8, 16))
+        d.rectangle([0, 0, bw, wy0], fill=(6, 8, 16))
+        d.rectangle([wx0 + (wx1 - wx0) / 2 - 6 * S2, wy0, wx0 + (wx1 - wx0) / 2 + 6 * S2, wy1], fill=(6, 8, 16))
+        cone(img, (bw * 0.7, bh * 0.25), (bw * 0.1, bh * 1.0), (bw * 0.75, bh * 1.0), (90, 120, 180), 60, 50 * S2)
+        d = ImageDraw.Draw(img)
+        d.rectangle([0, bh * 0.72, bw * 0.95, bh * 0.82], fill=(18, 20, 30))  # bed
+        d.rectangle([0, bh * 0.82, bw, bh], fill=(3, 3, 6))
+        rimmed(img, lambda dd, c: (person(dd, bw * 0.4, bh * 0.92, 900 * S2, c, "stand")), (2, 2, 4), (120, 150, 210), 1, -1, 5 * S2)
+        d = ImageDraw.Draw(img)
+        d.rectangle([0, bh * 0.76, bw * 0.95, bh * 1.0], fill=(10, 11, 18))  # blanket over the legs
+        d.rounded_rectangle([bw * 0.7, bh * 0.69, bw * 0.9, bh * 0.74], radius=10 * S2, fill=(10, 8, 8))
+        d.text((bw * 0.8, bh * 0.715), "3:12", font=font(SERIF_B, 70 * S2), fill=(255, 40, 30), anchor="mm")
+        glow(img, bw * 0.8, bh * 0.715, 160 * S2, (255, 30, 20), 60)
+        return img.resize((bw // S2, bh // S2), Image.LANCZOS)
+    if name == "bus":  # a city bus stopped mid-road, lit inside, everyone slumped
+        img = grad(bw, bh, (4, 6, 12), (18, 22, 34))
+        d = ImageDraw.Draw(img)
+        skyline(d, bw, bh * 0.55, (12, 14, 22), rnd, 200, 700, lit=0.02)
+        d.rectangle([0, bh * 0.55, bw, bh], fill=(10, 11, 14))
+        cone(img, (bw * 0.15, bh * 0.3), (bw * -0.1, bh * 0.75), (bw * 0.45, bh * 0.75), (255, 200, 120), 80, 40 * S2)
+        d = ImageDraw.Draw(img)
+        d.line([(bw * 0.15, bh * 0.3), (bw * 0.15, bh * 0.75)], fill=(4, 4, 6), width=10 * S2)
+        bx0, by0, bx1, by1 = bw * 0.28, bh * 0.42, bw * 1.05, bh * 0.68
+        d.rounded_rectangle([bx0, by0, bx1, by1], radius=40 * S2, fill=(20, 26, 30))
+        for k in range(6):  # windows with sleeping passengers
+            x0 = bx0 + 60 * S2 + k * 150 * S2
+            d.rectangle([x0, by0 + 50 * S2, x0 + 120 * S2, by0 + 230 * S2], fill=(230, 220, 170))
+            hx = x0 + 60 * S2 + (k % 2) * 14 * S2
+            d.ellipse([hx - 26 * S2, by0 + 150 * S2, hx + 26 * S2, by0 + 205 * S2], fill=(30, 26, 22))  # slumped head
+            d.rectangle([hx - 40 * S2, by0 + 195 * S2, hx + 40 * S2, by0 + 230 * S2], fill=(30, 26, 22))
+        glow(img, bw * 0.65, bh * 0.5, 600 * S2, (240, 220, 160), 70)
+        d = ImageDraw.Draw(img)
+        for wx in (bx0 + 140 * S2, bx1 - 160 * S2):
+            d.ellipse([wx - 60 * S2, by1 - 60 * S2, wx + 60 * S2, by1 + 60 * S2], fill=(4, 4, 6))
+        d.text((bx0 + 40 * S2, by0 + 20 * S2), "NOT IN SERVICE", font=font(SERIF_B, 30 * S2), fill=(255, 150, 60))
+        d.line([(0, bh * 0.85), (bw, bh * 0.85)], fill=(40, 40, 46), width=6 * S2)
+        rimmed(img, lambda dd, c: person(dd, bw * 0.16, bh * 0.95, 820 * S2, c, "stand"), (2, 2, 3), (255, 190, 120), 1, 0, 5 * S2)
+        return img.resize((bw // S2, bh // S2), Image.LANCZOS)
+    if name == "tv":  # you from behind, watching an empty news desk
+        img = Image.new("RGB", (bw, bh), (3, 3, 6))
+        d = ImageDraw.Draw(img)
+        tx0, ty0, tx1, ty1 = bw * 0.12, bh * 0.2, bw * 0.88, bh * 0.48
+        d.rectangle([tx0 - 14 * S2, ty0 - 14 * S2, tx1 + 14 * S2, ty1 + 14 * S2], fill=(14, 14, 18))
+        scr = grad(int(tx1 - tx0), int(ty1 - ty0), (30, 50, 110), (12, 20, 50))
+        sd = ImageDraw.Draw(scr)
+        sw, sh_ = scr.size
+        sd.rectangle([sw * 0.15, sh_ * 0.62, sw * 0.85, sh_ * 0.8], fill=(170, 180, 200))  # desk
+        sd.rectangle([sw * 0.42, sh_ * 0.5, sw * 0.58, sh_ * 0.62], fill=(60, 70, 110))  # empty chair back
+        sd.rectangle([0, sh_ * 0.84, sw, sh_], fill=(180, 20, 30))
+        sd.text((24 * S2, sh_ * 0.92), "LIVE  ·  BREAKING", font=font(SERIF_B, 34 * S2), fill=(255, 255, 255), anchor="lm")
+        img.paste(scr, (int(tx0), int(ty0)))
+        glow(img, bw * 0.5, bh * 0.34, 900 * S2, (60, 90, 200), 120)
+        d = ImageDraw.Draw(img)
+        rimmed(img, lambda dd, c: person(dd, bw * 0.5, bh * 1.25, 1600 * S2, c, "stand"), (1, 1, 2), (110, 150, 255), 0, 1, 6 * S2)
+        return img.resize((bw // S2, bh // S2), Image.LANCZOS)
+    if name == "avenue":  # long empty avenue, lamps receding, tiny walker
+        img = grad(bw, bh, (30, 22, 40), (190, 110, 80))  # dusk
+        d = ImageDraw.Draw(img)
+        vx, vy = bw * 0.5, bh * 0.5
+        skyline(d, bw, vy + 20 * S2, (40, 26, 36), rnd, 200, 900)
+        d.polygon([(vx - 30 * S2, vy), (vx + 30 * S2, vy), (bw * 1.2, bh), (-bw * 0.2, bh)], fill=(26, 20, 26))
+        for k in range(1, 9):  # lamps receding
+            t = 1 - 0.85 ** k
+            for sgn in (-1, 1):
+                x = vx + sgn * (30 * S2 + t * bw * 0.6)
+                ybase = vy + t * (bh - vy)
+                hgt = 40 * S2 + t * 700 * S2
+                d.line([(x, ybase), (x, ybase - hgt)], fill=(10, 8, 10), width=max(2, int(t * 14 * S2)))
+                glow(img, x, ybase - hgt, int(30 * S2 + t * 160 * S2), (255, 190, 120), 140)
+                d = ImageDraw.Draw(img)
+        rimmed(img, lambda dd, c: person(dd, vx + 40 * S2, bh * 0.78, 300 * S2, c, "stand"), (6, 4, 6), (255, 170, 110), 0, 1, 3 * S2)
+        return img.resize((bw // S2, bh // S2), Image.LANCZOS)
+    if name == "window":  # looking up at a dark apartment block across the street
+        img = grad(bw, bh, (4, 6, 14), (12, 16, 30))
+        d = ImageDraw.Draw(img)
+        d.polygon([(bw * 0.1, bh * 0.08), (bw * 0.95, bh * 0.0), (bw * 0.95, bh * 1.0), (bw * 0.1, bh * 1.0)], fill=(14, 16, 24))
+        for r in range(9):
+            for c in range(4):
+                x0 = bw * 0.18 + c * bw * 0.19
+                y0 = bh * 0.12 + r * bh * 0.095
+                d.rectangle([x0, y0, x0 + bw * 0.12, y0 + bh * 0.06], fill=(8, 10, 16))
+        return img.resize((bw // S2, bh // S2), Image.LANCZOS)
     raise KeyError(name)
+
+
+def lit_window(img, t_on, t, wave=True):
+    """The cliffhanger: one window lights up and a silhouette waves."""
+    if t < t_on:
+        return
+    k = min(1.0, (t - t_on) / 0.25)
+    flick = 1.0 if t - t_on > 0.6 else (0.4 + 0.6 * (int((t - t_on) * 20) % 2))
+    W2, H2 = img.size
+    x0, y0 = int(W2 * 0.18 + 2 * W2 * 0.19 * 1.0), int(H2 * 0.12 + 4 * H2 * 0.095)
+    x0, y0 = int(W2 * 0.56 - W2 * 0.06), int(H2 * 0.46)
+    ww, wh = int(W2 * 0.14), int(H2 * 0.07)
+    glow(img, x0 + ww / 2, y0 + wh / 2, int(W2 * 0.35), (255, 200, 120), int(110 * k * flick))
+    d = ImageDraw.Draw(img)
+    d.rectangle([x0, y0, x0 + ww, y0 + wh], fill=tuple(int(c * k * flick) for c in (255, 214, 150)))
+    if wave and t - t_on > 0.9:
+        cx, base = x0 + ww / 2, y0 + wh
+        hu = wh * 0.95
+        d.ellipse([cx - hu * 0.1, base - hu * 0.95, cx + hu * 0.1, base - hu * 0.7], fill=(10, 8, 8))
+        d.polygon([(cx - hu * 0.22, base - hu * 0.66), (cx + hu * 0.22, base - hu * 0.66), (cx + hu * 0.2, base), (cx - hu * 0.2, base)], fill=(10, 8, 8))
+        ang = math.radians(-60 + 35 * math.sin((t - t_on) * 7))
+        ax, ay = cx + hu * 0.2, base - hu * 0.6
+        d.line([(ax, ay), (ax + math.cos(ang) * hu * 0.45, ay + math.sin(ang) * hu * 0.45)], fill=(10, 8, 8), width=max(2, int(hu * 0.08)))
+
+
+def smoke(img, t, x, y):
+    m = Image.new("L", (img.width // 4, img.height // 4), 0)
+    d = ImageDraw.Draw(m)
+    for k in range(8):
+        life = (t * 0.3 + k / 8) % 1.0
+        px = x / 4 + math.sin(t + k) * 20 + life * 30
+        py = y / 4 - life * 120
+        r = 10 + life * 40
+        d.ellipse([px - r, py - r, px + r, py + r], fill=int(70 * (1 - life)))
+    m = m.filter(ImageFilter.GaussianBlur(8)).resize(img.size, Image.BILINEAR)
+    img.paste((150, 140, 130), (0, 0), m)
 
 
 # ---------------------------------------------------------------- per-frame finishing
