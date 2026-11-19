@@ -1,0 +1,23 @@
+name: Trend radar
+on:
+  schedule:
+    - cron: "0 14 * * *"   # every day, 6-7 AM Vancouver time
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m whatif.trends --out trends/latest.md
+      - name: Commit the report
+        run: |
+          git config user.name "trend-radar"
+          git config user.email "trend-radar@users.noreply.github.com"
+          git add trends/latest.md
+          git commit -m "Trend radar $(date -u +%F)" || echo "no change"
+          git push

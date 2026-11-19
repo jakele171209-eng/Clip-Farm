@@ -1,0 +1,1737 @@
+{
+ "title": "What if you only had 48 hours to live?",
+ "format": "landscape",
+ "voice": "am_michael",
+ "speed": 1.0,
+ "gap": 0.32,
+ "music": "tense",
+ "sources": [
+  "UBC (2020), 'UBC research shows hearing persists at end of life' — Blundon, Ward, Gallagher, Scientific Reports; EEG of hospice patients, 5 recorded while unresponsive: https://research.ubc.ca/node/16646",
+  "Dawson & Reid (1997), Nature 388:235, via U.S. Air Force Safety Center 'Oh Man, Am I Beat!' (24 h awake ~ 0.10% BAC; 17-19 h ~ 0.05%, Williamson & Feyer 2000): https://www.safety.af.mil/News/Features/Display/Article/434514/oh-man-am-i-beat/",
+  "Scotiabank / Maru survey, April 2024: 43% of Canadians say they don't have a will: https://www.newswire.ca/en/releases/archive/April2024/03/c4943.html",
+  "Jiang & Carstensen (2023), Frontiers in Psychology, citing Fredrickson & Carstensen (1990) and Fung & Carstensen (2006, SARS Hong Kong and post-9/11): https://frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2022.1075814/pdf",
+  "Richardson & Gilovich (2023), Royal Society Open Science, replication: short-term regrets are actions, long-term regrets are inactions: https://ecommons.cornell.edu/entities/publication/0cb2eb5b-f492-43c4-aaf4-513b1db7179a",
+  "Dunn, Aknin & Norton (2008), Science, 'Spending money on others promotes happiness' ($5 or $20, spent on others vs self, same day): https://news.harvard.edu/gazette/story/2008/04/money-spent-on-others-can-buy-happiness/",
+  "Criminal Code of Canada: 80 mg per 100 mL (0.08%) blood alcohol limit."
+ ],
+ "shots": [
+  {
+   "text": "You have forty-eight hours to live.",
+   "scene": "clinic",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    },
+    {
+     "who": "doctor",
+     "x": 0.62,
+     "mood": "flat"
+    }
+   ],
+   "clock": "48:00:00",
+   "impact": {
+    "word": "live",
+    "flash": "white",
+    "shake": 0.5
+   },
+   "music": "tense"
+  },
+  {
+   "text": "No pain. No warning signs. You'll feel completely fine, right up until the end.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "worried"
+    },
+    {
+     "who": "doctor",
+     "x": 0.62,
+     "mood": "flat"
+    }
+   ],
+   "label": {
+    "text": "TIME LEFT: 48 HOURS",
+    "color": "red"
+   }
+  },
+  {
+   "text": "And in the next two days, you're going to make one mistake that almost everyone makes.",
+   "scene": "mind",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "worried"
+    }
+   ],
+   "label": {
+    "text": "THE MISTAKE",
+    "color": "red"
+   }
+  },
+  {
+   "text": "By the end of this video, you'll know what it is. And why science says you'll regret it.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "awkward"
+    }
+   ]
+  },
+  {
+   "text": "The clock starts now.",
+   "scene": "clinic",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    },
+    {
+     "who": "doctor",
+     "x": 0.62,
+     "mood": "flat"
+    }
+   ],
+   "clock": "47:59:30",
+   "impact": {
+    "word": "now",
+    "flash": "black",
+    "shake": 0.4
+   }
+  },
+  {
+   "text": "Hour zero.",
+   "chapter": {
+    "num": 1,
+    "title": "THE DIAGNOSIS"
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "worried"
+    },
+    {
+     "who": "doctor",
+     "x": 0.62,
+     "mood": "flat"
+    }
+   ],
+   "clock": "47:58:00"
+  },
+  {
+   "text": "Your heart is pounding. That's adrenaline. Your body thinks something is about to attack you.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    },
+    {
+     "who": "doctor",
+     "x": 0.62,
+     "mood": "flat"
+    }
+   ],
+   "label": {
+    "text": "ADRENALINE: MAXED",
+    "color": "red"
+   }
+  },
+  {
+   "text": "But there's nothing to fight. Just a number.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "worried"
+    },
+    {
+     "who": "doctor",
+     "x": 0.62,
+     "mood": "flat"
+    }
+   ]
+  },
+  {
+   "text": "So you do what everyone does first. You ask for a second opinion.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "awkward"
+    },
+    {
+     "who": "doctor",
+     "x": 0.62,
+     "mood": "flat"
+    }
+   ],
+   "label": {
+    "text": "DENIAL: ACTIVATED",
+    "color": "dark"
+   }
+  },
+  {
+   "text": "Then you google it. Which is a terrible idea.",
+   "scene": "home_night",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "worried"
+    }
+   ],
+   "label": {
+    "text": "SEARCH RESULTS: 4,000,000",
+    "color": "dark"
+   }
+  },
+  {
+   "text": "Every page is worse than the last. One forum says you have three hours. Another says you might be a vampire.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "shock"
+    }
+   ],
+   "impact": {
+    "word": "vampire",
+    "flash": "white",
+    "shake": 0.2
+   }
+  },
+  {
+   "text": "You close the laptop and book a second appointment.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "awkward"
+    }
+   ]
+  },
+  {
+   "text": "The second doctor says the same thing.",
+   "scene": "clinic",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "worried"
+    },
+    {
+     "who": "doctor",
+     "x": 0.62,
+     "mood": "flat"
+    }
+   ]
+  },
+  {
+   "text": "So do the third and fourth.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    },
+    {
+     "who": "doctor",
+     "x": 0.62,
+     "mood": "flat"
+    }
+   ],
+   "kicker": "HOUR 2",
+   "clock": "46:10:00"
+  },
+  {
+   "text": "You just spent two hours proving something you already knew.",
+   "scene": "street_night",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.45,
+     "mood": "awkward"
+    }
+   ],
+   "label": {
+    "text": "2 HOURS: GONE",
+    "color": "red"
+   }
+  },
+  {
+   "text": "Okay. Let's do the math.",
+   "chapter": {
+    "num": 2,
+    "title": "THE MATH"
+   },
+   "scene": "mind",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    }
+   ],
+   "clock": "45:55:00"
+  },
+  {
+   "text": "Forty-six hours left. That's two thousand seven hundred and sixty minutes.",
+   "counter": {
+    "from": 0,
+    "to": 2760,
+    "unit": " MIN",
+    "label": "WHAT YOU HAVE LEFT",
+    "shift": false,
+    "y": 440
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.18,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "Your first idea: never sleep again. Why waste a single minute?",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "smug"
+    }
+   ],
+   "label": {
+    "text": "PLAN A: NO SLEEP",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "Here's the problem.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "After about twenty-four hours awake, your brain works about as well as someone with a blood alcohol level of point one.",
+   "bars": {
+    "title": "HOW IMPAIRED YOU ARE",
+    "rows": [
+     {
+      "name": "LEGAL DRIVING LIMIT (CANADA)",
+      "value": 0.08,
+      "unit": "%",
+      "decimals": 2
+     },
+     {
+      "name": "YOU, 24 HOURS AWAKE",
+      "value": 0.1,
+      "unit": "%",
+      "decimals": 2,
+      "hl": true
+     }
+    ],
+    "y": 280
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.12,
+     "mood": "sick"
+    }
+   ]
+  },
+  {
+   "text": "That's over the legal limit. Your last day on Earth, and you'd spend it basically drunk.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "sick"
+    }
+   ],
+   "label": {
+    "text": "PLAN A: CANCELLED",
+    "color": "red"
+   }
+  },
+  {
+   "text": "So you'll need sleep. Two short nights, about six hours in total.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "That leaves forty hours. And you haven't done anything yet.",
+   "counter": {
+    "from": 46,
+    "to": 40,
+    "unit": " HOURS",
+    "label": "AWAKE TIME LEFT",
+    "y": 440
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.18,
+     "mood": "worried"
+    }
+   ]
+  },
+  {
+   "text": "Hour three.",
+   "chapter": {
+    "num": 3,
+    "title": "THE BUCKET LIST TRAP"
+   },
+   "scene": "home_day",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    }
+   ],
+   "clock": "45:00:00"
+  },
+  {
+   "text": "You open your bucket list. Tokyo. The northern lights. Skydiving. A real Italian pizza in Naples.",
+   "card": {
+    "title": "BUCKET LIST",
+    "rows": [
+     [
+      "Tokyo",
+      "10 H FLIGHT",
+      "bad"
+     ],
+     [
+      "Northern lights",
+      "CLOUDS?",
+      "bad"
+     ],
+     [
+      "Skydiving",
+      "BOOKED UP",
+      "bad"
+     ],
+     [
+      "Pizza in Naples",
+      "TOO FAR",
+      "bad"
+     ]
+    ]
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.25,
+     "mood": "happy"
+    }
+   ]
+  },
+  {
+   "text": "Then you check the flights.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.25,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "From Vancouver, Tokyo is about ten hours in the air. Each way.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.25,
+     "mood": "worried"
+    }
+   ],
+   "label": {
+    "text": "TOKYO: ~10 H EACH WAY",
+    "color": "dark"
+   }
+  },
+  {
+   "text": "Add the airport, security, and the customs line, and half of your life is spent in a seat with a tiny screen.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.25,
+     "mood": "awkward"
+    }
+   ],
+   "label": {
+    "text": "LIFE LEFT, IN AIRPORTS: 50%",
+    "color": "red"
+   }
+  },
+  {
+   "text": "You'd die somewhere over the Pacific, watching a movie you didn't even pick.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "flat"
+    }
+   ],
+   "impact": {
+    "word": "Pacific",
+    "flash": "white",
+    "shake": 0.3
+   }
+  },
+  {
+   "text": "So the big trips are out. But here's the strange part.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "Even if you could teleport to Tokyo, scientists think you probably wouldn't want to go.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    }
+   ],
+   "label": {
+    "text": "WAIT, WHAT?",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "Hold that thought. First, there's something boring you have to deal with.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "awkward"
+    }
+   ]
+  },
+  {
+   "text": "Hour six.",
+   "chapter": {
+    "num": 4,
+    "title": "THE PAPERWORK"
+   },
+   "scene": "home_day",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "flat"
+    }
+   ],
+   "clock": "42:00:00",
+   "music": "light"
+  },
+  {
+   "text": "Do you have a will?",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "awkward"
+    }
+   ],
+   "impact": {
+    "word": "will",
+    "flash": "white",
+    "shake": 0.2
+   }
+  },
+  {
+   "text": "If you're Canadian, there's a good chance you don't. In a 2024 survey, forty-three percent said they had no will.",
+   "bars": {
+    "title": "CANADIANS WITH NO WILL (2024)",
+    "rows": [
+     {
+      "name": "NO WILL",
+      "value": 43,
+      "unit": "%",
+      "hl": true
+     },
+     {
+      "name": "HAVE A WILL",
+      "value": 57,
+      "unit": "%"
+     }
+    ],
+    "y": 280
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.12,
+     "mood": "awkward"
+    }
+   ]
+  },
+  {
+   "text": "Without one, you don't decide who gets your things. Your province's law does.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "worried"
+    }
+   ],
+   "label": {
+    "text": "YOUR STUFF: DECIDED BY LAW",
+    "color": "red"
+   }
+  },
+  {
+   "text": "So you write one. Then you hit the real problem: your phone.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "Your photos, your messages, every account you own. All locked behind passwords only you know.",
+   "card": {
+    "title": "LOCKED FOREVER",
+    "rows": [
+     [
+      "Photos",
+      "12,000+",
+      "bad"
+     ],
+     [
+      "Messages",
+      "LOCKED",
+      "bad"
+     ],
+     [
+      "Accounts",
+      "47",
+      "bad"
+     ]
+    ]
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.25,
+     "mood": "worried"
+    }
+   ]
+  },
+  {
+   "text": "Apple, Google and Facebook all let you pick a legacy contact. Someone who can get in after you're gone.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    }
+   ],
+   "label": {
+    "text": "SETTING: LEGACY CONTACT",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "Which raises a question you weren't ready for.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "worried"
+    }
+   ]
+  },
+  {
+   "text": "Who do you trust with everything?",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    }
+   ],
+   "impact": {
+    "word": "everything",
+    "flash": "white",
+    "shake": 0.3
+   }
+  },
+  {
+   "text": "You type one name without even thinking.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "Hour eight.",
+   "chapter": {
+    "num": 5,
+    "title": "THE MONEY"
+   },
+   "scene": "street_night",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "calm"
+    }
+   ],
+   "clock": "40:00:00"
+  },
+  {
+   "text": "Next problem: your savings. You can't take it with you. And you can't spend it fast enough.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "worried"
+    }
+   ]
+  },
+  {
+   "text": "Your first idea is a shopping spree. A sports car. The biggest TV in the store.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "smug"
+    }
+   ],
+   "label": {
+    "text": "PLAN: BUY EVERYTHING",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "But a car you'll drive for one day is just a very expensive rental.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "awkward"
+    }
+   ],
+   "label": {
+    "text": "PLAN: CANCELLED",
+    "color": "red"
+   }
+  },
+  {
+   "text": "There's a better idea, from a psychologist right here in Vancouver.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "In 2008, psychologists Elizabeth Dunn, Lara Aknin and Michael Norton handed people an envelope of cash in the morning.",
+   "scene": "mind",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ],
+   "label": {
+    "text": "THE ENVELOPE EXPERIMENT",
+    "color": "dark"
+   }
+  },
+  {
+   "text": "Some had to spend it on themselves. Others had to spend it on someone else.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "smug"
+    }
+   ]
+  },
+  {
+   "text": "By the end of the day, the people who spent it on others were happier.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "smug"
+    }
+   ],
+   "label": {
+    "text": "GIVING > BUYING",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "And the amount barely mattered. Five dollars worked about as well as twenty.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "So you skip the car. You pay off your little sister's student loan.",
+   "scene": "home_day",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "happy"
+    }
+   ]
+  },
+  {
+   "text": "And you leave the guy at the coffee shop a three hundred dollar tip. He thinks it's a mistake.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "happy"
+    }
+   ],
+   "label": {
+    "text": "TIP: 300 DOLLARS",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "It is not a mistake. It's the best thing you've bought in years.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "happy"
+    }
+   ]
+  },
+  {
+   "text": "Hour ten.",
+   "chapter": {
+    "num": 6,
+    "title": "THE SWITCH"
+   },
+   "scene": "mind",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "calm"
+    }
+   ],
+   "clock": "38:00:00",
+   "music": "tense"
+  },
+  {
+   "text": "Remember the trip you wouldn't want to take? Here's why.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "Psychologist Laura Carstensen has spent decades studying what happens when people feel their time is running out.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ],
+   "label": {
+    "text": "STANFORD: TIME & EMOTION",
+    "color": "dark"
+   }
+  },
+  {
+   "text": "Older people tend to choose time with the people they already love over meeting someone new.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "smug"
+    }
+   ]
+  },
+  {
+   "text": "You might think that's just age. It isn't.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "smug"
+    }
+   ]
+  },
+  {
+   "text": "When young people are asked to imagine their time is limited, they start choosing exactly like older people do.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "worried"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ],
+   "label": {
+    "text": "LESS TIME = FAMILIAR FACES",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "Researchers saw it in Hong Kong during the SARS outbreak, and in the US after 9/11.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "And in the first year of COVID, around two out of three younger adults in one study picked a chat with family over someone new.",
+   "bars": {
+    "title": "WHO WOULD YOU RATHER TALK TO? (2020)",
+    "rows": [
+     {
+      "name": "SOMEONE NEW",
+      "value": 34,
+      "unit": "%"
+     },
+     {
+      "name": "FAMILY",
+      "value": 66,
+      "unit": "%",
+      "hl": true
+     }
+    ],
+    "y": 280
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.12,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "Your brain flips a switch. New experiences suddenly feel cheap. The people you already have feel priceless.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    }
+   ],
+   "impact": {
+    "word": "switch",
+    "flash": "white",
+    "shake": 0.3
+   }
+  },
+  {
+   "text": "That's why Tokyo can wait forever.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "You pick up your phone.",
+   "scene": "home_day",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "Hour twelve.",
+   "chapter": {
+    "num": 7,
+    "title": "THE CALLS"
+   },
+   "scene": "home_day",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    }
+   ],
+   "clock": "36:00:00",
+   "music": "light"
+  },
+  {
+   "text": "The first call is the hardest one. Your mom picks up on the second ring.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "worried"
+    },
+    {
+     "who": "mom",
+     "x": 0.62,
+     "mood": "happy"
+    }
+   ]
+  },
+  {
+   "text": "She thinks you're calling about dinner on Sunday.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "awkward"
+    },
+    {
+     "who": "mom",
+     "x": 0.62,
+     "mood": "happy"
+    }
+   ]
+  },
+  {
+   "text": "You don't tell her right away. You just let her talk about her week, and you listen to every word.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "mom",
+     "x": 0.62,
+     "mood": "happy"
+    }
+   ],
+   "label": {
+    "text": "BEST CALL OF YOUR LIFE",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "Then you tell her.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "worried"
+    },
+    {
+     "who": "mom",
+     "x": 0.62,
+     "mood": "shock"
+    }
+   ],
+   "impact": {
+    "word": "her",
+    "flash": "white",
+    "shake": 0.2
+   }
+  },
+  {
+   "text": "She is at your door in forty minutes.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "worried"
+    },
+    {
+     "who": "mom",
+     "x": 0.58,
+     "mood": "worried"
+    }
+   ],
+   "kicker": "HOUR 13"
+  },
+  {
+   "text": "Now, the second call. And this is where the mistake comes in.",
+   "scene": "mind",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "worried"
+    }
+   ],
+   "music": "tense"
+  },
+  {
+   "text": "Remember: almost everyone makes it.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "worried"
+    }
+   ],
+   "label": {
+    "text": "THE MISTAKE",
+    "color": "red"
+   }
+  },
+  {
+   "text": "Cornell psychologist Tom Gilovich studied what people regret.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "In the short term, we regret the things we did. The embarrassing text. The bad haircut.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "awkward"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "smug"
+    }
+   ],
+   "label": {
+    "text": "SHORT TERM: WHAT YOU DID",
+    "color": "dark"
+   }
+  },
+  {
+   "text": "But looking back over a whole life, the regrets that stick are the things we never did.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ],
+   "label": {
+    "text": "LONG TERM: WHAT YOU DIDN'T DO",
+    "color": "red"
+   }
+  },
+  {
+   "text": "The trip you never took. The thing you never said.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "worried"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "The mistake is spending your last hours fixing small things you did, instead of doing the big things you never did.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "shock"
+    }
+   ],
+   "impact": {
+    "word": "never",
+    "flash": "black",
+    "shake": 0.4
+   }
+  },
+  {
+   "text": "So the second call isn't to your bank.",
+   "scene": "street_night",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "calm"
+    }
+   ],
+   "music": "light"
+  },
+  {
+   "text": "It's to the friend you stopped talking to three years ago. Over something so dumb neither of you remembers it.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.32,
+     "mood": "awkward"
+    },
+    {
+     "who": "friend",
+     "x": 0.65,
+     "mood": "flat"
+    }
+   ],
+   "kicker": "HOUR 15",
+   "clock": "33:00:00"
+  },
+  {
+   "text": "You say sorry. He says sorry. Neither of you hangs up for two hours.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.35,
+     "mood": "happy"
+    },
+    {
+     "who": "friend",
+     "x": 0.6,
+     "mood": "happy"
+    }
+   ],
+   "label": {
+    "text": "FRIENDSHIP: RESTORED",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "Then you make a list of every sentence you've been saving for later. There is no later.",
+   "card": {
+    "title": "THINGS I NEVER SAID",
+    "rows": [
+     [
+      "Dad",
+      "I'M PROUD OF YOU",
+      "good"
+     ],
+     [
+      "Sis",
+      "YOU WERE RIGHT",
+      "good"
+     ],
+     [
+      "Teacher",
+      "YOU CHANGED MY LIFE",
+      "good"
+     ]
+    ]
+   },
+   "scene": "home_night",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.25,
+     "mood": "calm"
+    }
+   ],
+   "clock": "30:00:00"
+  },
+  {
+   "text": "You send every one of them.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.25,
+     "mood": "happy"
+    }
+   ],
+   "impact": {
+    "word": "every",
+    "flash": "white",
+    "shake": 0.2
+   }
+  },
+  {
+   "text": "Hour twenty-four.",
+   "chapter": {
+    "num": 8,
+    "title": "THE LAST DAY"
+   },
+   "scene": "home_day",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "mom",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ],
+   "clock": "24:00:00"
+  },
+  {
+   "text": "Something weird happens on the last day. Nothing big happens. And it's perfect.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "happy"
+    },
+    {
+     "who": "mom",
+     "x": 0.62,
+     "mood": "happy"
+    }
+   ]
+  },
+  {
+   "text": "Breakfast with your mom. A walk around the block. Bad jokes with your friend.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "happy"
+    },
+    {
+     "who": "friend",
+     "x": 0.62,
+     "mood": "happy"
+    }
+   ],
+   "label": {
+    "text": "SIDE QUESTS: COMPLETED",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "You notice things you walked past for years. The smell of rain. The guy at the coffee shop who always remembers your order.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "You ask your mom to teach you her soup recipe. The one you always said you'd learn someday.",
+   "scene": "home_day",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "mom",
+     "x": 0.62,
+     "mood": "happy"
+    }
+   ]
+  },
+  {
+   "text": "Turns out someday takes forty minutes.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "happy"
+    },
+    {
+     "who": "mom",
+     "x": 0.62,
+     "mood": "happy"
+    }
+   ],
+   "label": {
+    "text": "SOMEDAY: 40 MINUTES",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "Your friend shows you the dumb video that made you both cry laughing in grade nine. It's still funny.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "happy"
+    },
+    {
+     "who": "friend",
+     "x": 0.62,
+     "mood": "happy"
+    }
+   ]
+  },
+  {
+   "text": "You take zero photos. For once, you're not saving anything for later.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "It feels like the first day you've actually been awake.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "happy"
+    }
+   ]
+  },
+  {
+   "text": "Hour forty-six. You don't want to sleep. Your friend drives you to a rooftop to watch the sunrise.",
+   "scene": "rooftop_dawn",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "calm"
+    },
+    {
+     "who": "friend",
+     "x": 0.6,
+     "mood": "calm"
+    }
+   ],
+   "clock": "02:00:00",
+   "kicker": "HOUR 46",
+   "music": "tense"
+  },
+  {
+   "text": "Neither of you says much. You don't need to.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "calm"
+    },
+    {
+     "who": "friend",
+     "x": 0.6,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "Hour forty-eight.",
+   "chapter": {
+    "num": 9,
+    "title": "THE LAST SOUND"
+   },
+   "scene": "home_night",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "calm"
+    }
+   ],
+   "clock": "00:05:00"
+  },
+  {
+   "text": "Here's one last thing scientists found.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "In 2020, researchers at UBC in Vancouver recorded the brainwaves of patients in hospice care.",
+   "scene": "clinic",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ],
+   "label": {
+    "text": "UBC, 2020",
+    "color": "dark"
+   }
+  },
+  {
+   "text": "Some were so close to death they could no longer respond to anything.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "worried"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "But when the researchers played sounds, some of their brains still responded, like a healthy person's. Even hours before death.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ],
+   "impact": {
+    "word": "responded",
+    "flash": "white",
+    "shake": 0.3
+   },
+   "label": {
+    "text": "STILL LISTENING",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "The researchers are careful. They can't know if those patients understood anything.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "scientist",
+     "x": 0.62,
+     "mood": "flat"
+    }
+   ]
+  },
+  {
+   "text": "But it means the people you love should keep talking. Right to the end.",
+   "scene": "home_night",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "mom",
+     "x": 0.62,
+     "mood": "worried"
+    }
+   ]
+  },
+  {
+   "text": "So your mom talks. About the day you were born. About Sunday dinner.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "mom",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ],
+   "clock": "00:00:30"
+  },
+  {
+   "text": "And maybe, you hear every word.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "mom",
+     "x": 0.62,
+     "mood": "calm"
+    }
+   ],
+   "clock": "00:00:05",
+   "impact": {
+    "word": "word",
+    "flash": "black",
+    "shake": 0.0
+   }
+  },
+  {
+   "text": "Here's the twist.",
+   "scene": "mind",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "calm"
+    }
+   ],
+   "clock": null,
+   "music": "light"
+  },
+  {
+   "text": "Your clock is already running. You just can't see the numbers.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "shock"
+    }
+   ],
+   "label": {
+    "text": "TIME LEFT: ??:??:??",
+    "color": "red"
+   },
+   "impact": {
+    "word": "running",
+    "flash": "white",
+    "shake": 0.3
+   }
+  },
+  {
+   "text": "Forty-eight hours just makes you do now what you were saving for later.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "calm"
+    }
+   ]
+  },
+  {
+   "text": "So, who would you call first? Tell me in the comments.",
+   "scene": "home_day",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "happy"
+    }
+   ],
+   "label": {
+    "text": "WHO'S YOUR FIRST CALL?",
+    "color": "gold"
+   }
+  },
+  {
+   "text": "And maybe send this video to them. Today, while there's still a later.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.4,
+     "mood": "happy"
+    }
+   ],
+   "label": {
+    "text": "SEND THIS TO YOUR FIRST CALL",
+    "color": "gold"
+   }
+  }
+ ]
+}

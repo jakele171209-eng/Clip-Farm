@@ -179,7 +179,7 @@ def bars(frame: Image.Image, spec: dict, t: float, y: float = 520):
     """Horizontal comparison bars that grow one after another."""
     rows = spec["rows"]
     vmax = max(r["value"] for r in rows)
-    x0, x1 = 90, W - 90
+    x0, x1 = (90, W - 90) if W < H else (int(W * 0.3), W - 120)
     rh, gap = 74, 44
     title = spec.get("title")
     d = ImageDraw.Draw(frame)
@@ -189,7 +189,7 @@ def bars(frame: Image.Image, spec: dict, t: float, y: float = 520):
     frame.alpha_composite(p, (x0 - 30, int(y - 30)))
     yy = y
     if title:
-        d.text((W / 2, yy + 14), title, font=art.font(38), fill=(255, 214, 64), anchor="mm")
+        d.text(((x0 + x1) / 2, yy + 14), title, font=art.font(38), fill=(255, 214, 64), anchor="mm")
         yy += 70
     for i, r in enumerate(rows):
         start = 0.2 + i * 0.7
@@ -226,3 +226,21 @@ def whip(prev: Image.Image, cur: Image.Image, k: float) -> Image.Image:
     for j in range(n):
         acc += np.roll(a, int(blur * (j / (n - 1) - 0.5)), axis=1)
     return Image.fromarray((acc / n).astype(np.uint8))
+
+
+def chapter(frame: Image.Image, spec: dict, t: float, y: float):
+    """Chapter title band that slides in: small 'CHAPTER 2' over a big title."""
+    k = ease_out(t / 0.35)
+    band_h = 300
+    band = Image.new("RGBA", (W, band_h), (12, 10, 24, int(215 * k)))
+    frame.alpha_composite(band, (0, int(y - band_h / 2)))
+    d = ImageDraw.Draw(frame)
+    x = W / 2 + (1 - k) * -200
+    d.text((x, y - 70), spec.get("kicker", f"CHAPTER {spec.get('num', '')}").strip(), font=art.font(44),
+           fill=(255, 196, 54), anchor="mm")
+    title = spec["title"]
+    size = 110
+    while art.font(size).getlength(title) > W - 120 and size > 50:
+        size -= 6
+    d.text((W / 2 + (1 - k) * 200, y + 30), title, font=art.font(size), fill=(255, 255, 255), anchor="mm",
+           stroke_width=8, stroke_fill=(10, 10, 16))

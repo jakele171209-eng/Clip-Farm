@@ -1,0 +1,259 @@
+{
+ "title": "What if you only had 48 hours to live? (Short)",
+ "format": "vertical",
+ "voice": "am_michael",
+ "speed": 1.12,
+ "gap": 0.1,
+ "music": "tense",
+ "sources": [
+  "UBC (2020), 'UBC research shows hearing persists at end of life' — Blundon, Ward, Gallagher, Scientific Reports; EEG of hospice patients, 5 recorded while unresponsive: https://research.ubc.ca/node/16646",
+  "Dawson & Reid (1997), Nature 388:235, via U.S. Air Force Safety Center 'Oh Man, Am I Beat!' (24 h awake ~ 0.10% BAC; 17-19 h ~ 0.05%, Williamson & Feyer 2000): https://www.safety.af.mil/News/Features/Display/Article/434514/oh-man-am-i-beat/",
+  "Scotiabank / Maru survey, April 2024: 43% of Canadians say they don't have a will: https://www.newswire.ca/en/releases/archive/April2024/03/c4943.html",
+  "Jiang & Carstensen (2023), Frontiers in Psychology, citing Fredrickson & Carstensen (1990) and Fung & Carstensen (2006, SARS Hong Kong and post-9/11): https://frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2022.1075814/pdf",
+  "Richardson & Gilovich (2023), Royal Society Open Science, replication: short-term regrets are actions, long-term regrets are inactions: https://ecommons.cornell.edu/entities/publication/0cb2eb5b-f492-43c4-aaf4-513b1db7179a",
+  "Dunn, Aknin & Norton (2008), Science, 'Spending money on others promotes happiness' ($5 or $20, spent on others vs self, same day): https://news.harvard.edu/gazette/story/2008/04/money-spent-on-others-can-buy-happiness/",
+  "Criminal Code of Canada: 80 mg per 100 mL (0.08%) blood alcohol limit."
+ ],
+ "shots": [
+  {
+   "clock": "48:00:00",
+   "text": "You have forty-eight hours to live.",
+   "scene": "clinic",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "shock"
+    },
+    {
+     "who": "doctor",
+     "x": 0.72,
+     "mood": "flat"
+    }
+   ],
+   "impact": {
+    "word": "live",
+    "flash": "white",
+    "shake": 0.5
+   },
+   "label": {
+    "text": "TIME LEFT: 48 HOURS",
+    "color": "red"
+   }
+  },
+  {
+   "clock": "47:30:00",
+   "text": "Plan A: never sleep. Bad plan.",
+   "scene": "mind",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "smug"
+    }
+   ],
+   "label": {
+    "text": "PLAN A: NO SLEEP",
+    "color": "gold"
+   }
+  },
+  {
+   "clock": "46:00:00",
+   "text": "After 24 hours awake, your brain works like a blood alcohol of point one. Over the legal limit.",
+   "bars": {
+    "title": "HOW IMPAIRED YOU ARE",
+    "rows": [
+     {
+      "name": "LEGAL LIMIT",
+      "value": 0.08,
+      "unit": "%",
+      "decimals": 2
+     },
+     {
+      "name": "YOU, 24 H AWAKE",
+      "value": 0.1,
+      "unit": "%",
+      "decimals": 2,
+      "hl": true
+     }
+    ]
+   },
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "sick"
+    }
+   ]
+  },
+  {
+   "clock": "45:00:00",
+   "text": "Plan B: Tokyo. Ten hours in the air. Each way. You'd die watching an airplane movie.",
+   "scene": "home_day",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "awkward"
+    }
+   ],
+   "label": {
+    "text": "PLAN B: CANCELLED",
+    "color": "red"
+   }
+  },
+  {
+   "clock": "44:00:00",
+   "text": "But science says you wouldn't want to go anyway.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "shock"
+    }
+   ],
+   "impact": {
+    "word": "anyway",
+    "flash": "white",
+    "shake": 0.3
+   }
+  },
+  {
+   "clock": "40:00:00",
+   "text": "When time feels short, people stop wanting new things. They want the people they already love.",
+   "scene": "mind",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "calm"
+    }
+   ],
+   "label": {
+    "text": "LESS TIME = FAMILIAR FACES",
+    "color": "gold"
+   }
+  },
+  {
+   "clock": "38:00:00",
+   "text": "Plan C: buy a sports car. For one day. That's just a very expensive rental.",
+   "scene": "street_night",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "smug"
+    }
+   ],
+   "label": {
+    "text": "PLAN C: CANCELLED",
+    "color": "red"
+   }
+  },
+  {
+   "clock": "36:00:00",
+   "text": "In one famous experiment, people who spent even five dollars on someone else were happier by the end of the day than people who spent it on themselves.",
+   "scene": "mind",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "shock"
+    }
+   ],
+   "label": {
+    "text": "GIVING > BUYING",
+    "color": "gold"
+   }
+  },
+  {
+   "clock": "30:00:00",
+   "text": "And over a lifetime, our biggest regrets are the things we never did. Never said.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "worried"
+    }
+   ],
+   "label": {
+    "text": "REGRET #1: WHAT YOU DIDN'T DO",
+    "color": "red"
+   }
+  },
+  {
+   "clock": "20:00:00",
+   "text": "So you call your mom. You call the friend you stopped talking to. You say everything.",
+   "scene": "home_night",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "mom",
+     "x": 0.72,
+     "mood": "happy"
+    }
+   ]
+  },
+  {
+   "clock": "00:00:10",
+   "text": "Researchers in Vancouver even found that some dying patients' brains still responded to sound, hours before the end. So keep talking.",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.3,
+     "mood": "calm"
+    },
+    {
+     "who": "mom",
+     "x": 0.72,
+     "mood": "calm"
+    }
+   ],
+   "label": {
+    "text": "STILL LISTENING",
+    "color": "gold"
+   }
+  },
+  {
+   "clock": null,
+   "text": "Here's the twist. Your clock is already running. You just can't see the numbers.",
+   "scene": "mind",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "shock"
+    }
+   ],
+   "label": {
+    "text": "TIME LEFT: ??:??:??",
+    "color": "red"
+   },
+   "impact": {
+    "word": "running",
+    "flash": "white",
+    "shake": 0.3
+   }
+  },
+  {
+   "clock": null,
+   "text": "Who would you call first? Send this to them.",
+   "scene": "home_day",
+   "cast": [
+    {
+     "who": "hero",
+     "x": 0.5,
+     "mood": "happy"
+    }
+   ],
+   "label": {
+    "text": "SEND THIS TO YOUR FIRST CALL",
+    "color": "gold"
+   }
+  }
+ ]
+}

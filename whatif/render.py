@@ -19,6 +19,26 @@ from .tts import SR, speak
 FPS = 30
 GAP = 0.22  # seconds of air between shots
 
+# Where things sit on screen, per output format. Shorts are vertical; long-form YouTube is 16:9.
+LAYOUTS = {
+    "vertical": dict(size=(1080, 1920), kicker=210, label=310, timer=440, caption=820, cap_size=92,
+                     ground=1640, ground_card=1700, card_x=0.5, card_top=260, cast_scale=1.0, chapter=760),
+    "landscape": dict(size=(1920, 1080), kicker=70, label=150, timer=230, caption=1000, cap_size=64,
+                      ground=905, ground_card=905, card_x=0.70, card_top=110, cast_scale=0.72, chapter=330),
+}
+LAY = dict(LAYOUTS["vertical"])
+
+
+def set_format(fmt: str):
+    """Switch every module to the frame size of this format."""
+    global W, H
+    LAY.clear()
+    LAY.update(LAYOUTS[fmt])
+    art.set_size(*LAY["size"])
+    W, H = art.W, art.H
+    fx.W, fx.H = W, H
+    fx.vignette.cache_clear()
+
 
 @dataclass
 class Shot:
@@ -72,6 +92,31 @@ def music_bed(seconds: float, mood: str = "light") -> np.ndarray:
     if mood == "tense":
         return tense_bed(seconds)
     return light_bed(seconds)
+
+
+def scored_bed(shots, total: float, default: str) -> np.ndarray:
+    """Music that can change mood mid-story: a shot with "music" switches the bed, with a 2s crossfade."""
+    cues = [(0.0, default)]
+    for sh in shots:
+        m = sh.spec.get("music")
+        if m and m != cues[-1][1]:
+            cues.append((sh.start, m))
+    n = int(total * SR)
+    out = np.zeros(n, dtype=np.float32)
+    fade = int(2.0 * SR)
+    beds = {}
+    for i, (t0, mood) in enumerate(cues):
+        if mood not in beds:
+            beds[mood] = music_bed(total + 1, mood)
+        a = max(0, int(t0 * SR) - fade // 2)
+        b = n if i + 1 == len(cues) else min(n, int(cues[i + 1][0] * SR) + fade // 2)
+        env = np.ones(b - a, dtype=np.float32)
+        if i > 0:
+            env[:fade] = np.linspace(0, 1, min(fade, b - a))[: len(env[:fade])]
+        if i + 1 < len(cues):
+            env[-fade:] = np.linspace(1, 0, min(fade, b - a))[-len(env[-fade:]):]
+        out[a:b] += beds[mood][a:b] * env
+    return out
 
 
 def tense_bed(seconds: float) -> np.ndarray:
@@ -216,7 +261,7 @@ def caption(frame, words, t, y):
         return
     texts = [w[0].upper() for w in ch]
     pop_k = ease_pop((t - ch[0][1] + 0.04) / 0.14)
-    size = 92
+    size = LAY["cap_size"]
     while True:
         f = art.font(size)
         space = f.getlength(" ")
@@ -272,9 +317,9 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
             shown = min(len(rows), int(t / (shot.dur / (len(rows) + 0.6))) + 1)
         img = art.card(c["title"], [tuple(r) for r in rows], shown, tuple(c["alert"]) if c.get("alert") else None)
         s = 0.92 + 0.08 * ease_pop(t / 0.25)
-        cy = 260 + img.height / 2
-        paste_scaled(frame, img, W / 2, cy, s)
-        card_bottom = 260 + img.height
+        cy = LAY["card_top"] + img.height / 2
+        paste_scaled(frame, img, W * LAY["card_x"], cy, s)
+        card_bottom = LAY["card_top"] + img.height if LAY["card_x"] == 0.5 else None
 
     if sp.get("orbit"):
         paste_scaled(frame, art.orbit(gt), W / 2, 1180, 1.0)
@@ -326,7 +371,7 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
     if sp.get("speedlines"):
         frame.alpha_composite(art.speedlines(gt))
 
-    ground_y = 1640
+    ground_y = LAY["ground"]
     if "prop" in sp:
         pr = sp["prop"]
         img = art.prop(pr["kind"], bool(pr.get("broken")) or hit)
@@ -351,10 +396,10 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
         paste_scaled(frame, art.fire(gt), W / 2, 1460, 1.0)
 
     # characters, feet on a common ground line
-    ground = 1640 if "card" not in sp else 1700
+    ground = LAY["ground"] if "card" not in sp else LAY["ground_card"]
     for i, c in enumerate(sp.get("cast", [])):
         blink = (gt * 0.37 + i * 0.29) % 1.0 < 0.04
-        scale = c.get("scale", 1.0) * (0.85 if "card" in sp else 1.0)
+        scale = round(c.get("scale", 1.0) * LAY["cast_scale"] * (0.85 if "card" in sp and LAY["card_x"] == 0.5 else 1.0), 2)
         img = art.character(c["who"], c.get("mood", "calm"), blink, scale)
         breath = 1 + 0.014 * math.sin(gt * 2.6 + i)
         img = img.resize((img.width, int(img.height * breath)), Image.BILINEAR)
@@ -380,10 +425,10 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
 
     # labels at the top
     if "kicker" in sp:
-        paste_scaled(frame, art.pill(sp["kicker"], "kicker", 34), W / 2, 210, ease_pop((t - 0.0) / 0.2))
+        paste_scaled(frame, art.pill(sp["kicker"], "kicker", 34), W / 2, LAY["kicker"], ease_pop((t - 0.0) / 0.2))
     if "label" in sp:
         lab = sp["label"]
-        paste_scaled(frame, art.pill(lab["text"], lab.get("color", "dark"), 46), W / 2, 310 - 50 * (1 - fx.ease_out((t - 0.08) / 0.25)), ease_pop((t - 0.08) / 0.22))
+        paste_scaled(frame, art.pill(lab["text"], lab.get("color", "dark"), 46), W / 2, LAY["label"] - 50 * (1 - fx.ease_out((t - 0.08) / 0.25)), ease_pop((t - 0.08) / 0.22))
     if "counter" in sp:
         fx.counter(frame, sp["counter"], t, shot.dur, sp["counter"].get("y", 600))
     bars_bottom = None
@@ -397,9 +442,17 @@ def draw_frame(shot: Shot, t: float, gt: float) -> Image.Image:
     if sp.get("countdown") and shot.countdown_at is not None and gt < shot.countdown_at + 0.5:
         txt = f"LIGHTS OUT IN 00:{left:04.1f}"
         img = art.pill(txt, "red" if left < 5 else "dark", 54)
-        paste_scaled(frame, img, W / 2, 440, 1.0 + (0.06 * math.sin(gt * 12) if left < 5 else 0))
+        paste_scaled(frame, img, W / 2, LAY["timer"], 1.0 + (0.06 * math.sin(gt * 12) if left < 5 else 0))
 
-    cap_y = (card_bottom + 110) if card_bottom else (bars_bottom + 60 if bars_bottom else 820)
+    if sp.get("clock"):  # story clock, e.g. "47:59:00" ticking down live
+        hh, mm, ss = (int(x) for x in sp["clock"].split(":"))
+        left = max(0, hh * 3600 + mm * 60 + ss - int(gt - sp.get("_clock_t0", gt - t)))
+        txt = f"{left // 3600:02d}:{left // 60 % 60:02d}:{left % 60:02d} LEFT"
+        img = art.pill(txt, "red" if left < 3 * 3600 else "dark", 40)
+        frame.alpha_composite(img, (W - img.width - 40, 40))
+    if "chapter" in sp:
+        fx.chapter(frame, sp["chapter"], t, LAY["chapter"])
+    cap_y = (card_bottom + 110) if card_bottom else (bars_bottom + 60 if bars_bottom else LAY["caption"])
     frame.alpha_composite(fx.vignette(0.5))
     caption(frame, shot.words, t, cap_y)
     out = frame.convert("RGB")
@@ -427,8 +480,25 @@ def end_scene(sh):
     return sh.spec["scene"]
 
 
+def inherit(shots):
+    """Long scripts stay short: a shot without scene/cast/clock keeps the previous one's."""
+    prev = {}
+    for sp in shots:
+        if "clock" in sp:
+            sp["_clock_anchor"] = True  # the clock is set here; later shots keep counting from it
+        for key in ("scene", "cast", "clock"):
+            if key in sp:
+                prev[key] = sp[key]
+            elif key in prev:
+                sp[key] = prev[key]
+        if sp.get("clock") is None:
+            sp.pop("clock", None)
+
+
 def render(story_path: str, out_path: str, preview: float | None = None):
     story = json.load(open(story_path, encoding="utf-8"))
+    set_format(story.get("format", "vertical"))
+    inherit(story["shots"])
     voice, speed = story.get("voice", "am_michael"), story.get("speed", 1.05)
     gap = story.get("gap", GAP)
     shots, voice_parts, t = [], [], 0.0
@@ -441,6 +511,11 @@ def render(story_path: str, out_path: str, preview: float | None = None):
         voice_parts.append(audio)
         voice_parts.append(np.zeros(int(gap * SR), dtype=np.float32))
         t += sh.dur
+    anchor = 0.0
+    for sh in shots:  # story clock keeps running across shots that inherit it
+        if sh.spec.get("_clock_anchor"):
+            anchor = sh.start
+        sh.spec["_clock_t0"] = anchor
     for sh in shots:  # one countdown in the story, ending on the target shot's impact
         if sh.spec.get("countdown_target"):
             ti = impact_time(sh)
@@ -455,7 +530,7 @@ def render(story_path: str, out_path: str, preview: float | None = None):
     n = int(total * SR)
     mix = np.zeros(n, dtype=np.float32)
     mix[: min(n, len(voice_track))] += voice_track[:n] * 0.95
-    mix += music_bed(total, story.get("music", "light"))[:n]
+    mix += scored_bed(shots, total, story.get("music", "light"))[:n]
     for sh in shots:
         whoosh(sh.start - 0.06, mix)
         if sh.spec.get("tick"):

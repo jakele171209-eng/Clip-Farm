@@ -12,6 +12,14 @@ from functools import lru_cache
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 W, H = 1080, 1920
+
+
+def set_size(w: int, h: int):
+    """Change the frame size (vertical Shorts or 16:9 long-form)."""
+    global W, H
+    if (w, h) != (W, H):
+        W, H = w, h
+        background.cache_clear()
 SS = 2  # supersampling factor
 
 FONT_BOLD = "/usr/share/fonts/opentype/inter/Inter-ExtraBold.otf"
@@ -129,6 +137,14 @@ def background(scene: str) -> Image.Image:
         return _down(_ocean_cut(bw, bh))
     if scene == "cave":
         return _down(_cave(bw, bh))
+    if scene in ("home_day", "home_night"):
+        return _down(_home(bw, bh, scene == "home_night"))
+    if scene == "clinic":
+        return _down(_clinic(bw, bh))
+    if scene == "rooftop_dawn":
+        return _down(_rooftop(bw, bh))
+    if scene == "street_night":
+        return _down(_street(bw, bh))
 
     p = PALETTES[scene]
     img = _gradient((bw, bh), *p["sky"])
@@ -216,6 +232,9 @@ LOOKS = {
     "sailor2": dict(coat=(90, 96, 112), hat=(150, 50, 50), skin=(222, 178, 140), hat_style="cap", hair=None),
     "guide": dict(coat=(176, 128, 84), hat=None, skin=(196, 140, 100), hat_style=None, hair=(40, 30, 26)),
     "woman": dict(coat=(160, 112, 76), hat=None, skin=(200, 146, 106), hat_style=None, hair=(36, 28, 24), long_hair=True),
+    "doctor": dict(coat=(244, 248, 252), hat=None, skin=(150, 104, 76), hat_style=None, hair=(30, 24, 22)),
+    "mom": dict(coat=(150, 90, 150), hat=None, skin=(236, 196, 164), hat_style=None, hair=(110, 70, 50), long_hair=True),
+    "friend": dict(coat=(214, 64, 64), hat=(40, 44, 60), skin=(196, 140, 100), hat_style="cap", hair=None),
     "woman2": dict(coat=(186, 140, 96), hat=None, skin=(190, 136, 98), hat_style=None, hair=(44, 32, 26), long_hair=True),
 }
 
@@ -269,6 +288,9 @@ def character(who: str, mood: str, blink: bool = False, scale: float = 1.0) -> I
         for sx in (-1, 1):
             d.ellipse([cx + sx * ex - 36 * SS, ey - 32 * SS, cx + sx * ex + 36 * SS, ey + 32 * SS], outline=(40, 40, 50), width=6 * SS)
         d.line([(cx - ex + 36 * SS, ey), (cx + ex - 36 * SS, ey)], fill=(40, 40, 50), width=6 * SS)
+    if who == "doctor":  # stethoscope
+        d.arc([cx - 70 * SS, 290 * SS, cx + 70 * SS, 430 * SS], 0, 180, fill=(60, 70, 90), width=8 * SS)
+        d.ellipse([cx - 20 * SS, 420 * SS, cx + 20 * SS, 460 * SS], fill=(160, 170, 190))
     if who == "scientist":  # glasses + coat lapels
         d.line([(cx - 40 * SS, 300 * SS), (cx, 380 * SS), (cx + 40 * SS, 300 * SS)], fill=(190, 196, 206), width=8 * SS)
     for sx in (-1, 1):
@@ -852,4 +874,129 @@ def sun_disc(alpha: float) -> Image.Image:
     layer.putalpha(glow)
     img.alpha_composite(layer)
     ImageDraw.Draw(img).ellipse([200, 200, s - 200, s - 200], fill=(255, 240, 170, int(255 * alpha)))
+    return img
+
+
+# ---------------------------------------------------------------- modern scenes (long-form)
+
+def _glow(img, x, y, r, col, a=120):
+    g = Image.new("L", img.size, 0)
+    ImageDraw.Draw(g).ellipse([x - r, y - r, x + r, y + r], fill=a)
+    g = g.filter(ImageFilter.GaussianBlur(r / 3))
+    img.paste(col, (0, 0), g)
+
+
+def _home(bw, bh, night: bool):
+    u = min(bw, bh) / 1000
+    wall = (64, 70, 108) if night else (238, 222, 196)
+    img = _gradient((bw, bh), _lerp(wall, (0, 0, 0), 0.15), wall)
+    d = ImageDraw.Draw(img)
+    floor = bh * 0.62
+    d.rectangle([0, floor, bw, bh], fill=(70, 52, 48) if night else (176, 128, 88))
+    for k in range(0, int(bw), int(120 * u)):  # floorboards
+        d.line([(k, floor), (k - 60 * u, bh)], fill=(60, 44, 40) if night else (156, 112, 78), width=int(3 * u))
+    d.rectangle([0, floor - 14 * u, bw, floor], fill=(50, 40, 40) if night else (200, 180, 150))
+    # window
+    wx0, wy0, ww, wh = bw * 0.12, bh * 0.2, 300 * u, 330 * u
+    d.rectangle([wx0 - 14 * u, wy0 - 14 * u, wx0 + ww + 14 * u, wy0 + wh + 14 * u], fill=(250, 246, 236) if not night else (40, 44, 70))
+    sky = _gradient((int(ww), int(wh)), (14, 20, 50), (40, 50, 96)) if night else _gradient((int(ww), int(wh)), (120, 186, 240), (200, 230, 250))
+    img.paste(sky, (int(wx0), int(wy0)))
+    d = ImageDraw.Draw(img)
+    if night:
+        d.ellipse([wx0 + ww * 0.62, wy0 + wh * 0.12, wx0 + ww * 0.82, wy0 + wh * 0.12 + ww * 0.2], fill=(240, 236, 210))
+        rnd = random.Random(2)
+        for _ in range(30):
+            x, y = wx0 + rnd.uniform(0, ww), wy0 + rnd.uniform(wh * 0.55, wh)
+            d.rectangle([x, y, x + 8 * u, y + 10 * u], fill=(255, 214, 120))
+    d.line([(wx0 + ww / 2, wy0), (wx0 + ww / 2, wy0 + wh)], fill=(250, 246, 236) if not night else (40, 44, 70), width=int(12 * u))
+    d.line([(wx0, wy0 + wh / 2), (wx0 + ww, wy0 + wh / 2)], fill=(250, 246, 236) if not night else (40, 44, 70), width=int(12 * u))
+    # frames on the wall
+    for i, (fx_, col) in enumerate(((0.55, (230, 120, 90)), (0.68, (90, 160, 200)), (0.8, (240, 200, 90)))):
+        x = bw * fx_
+        d.rectangle([x, bh * 0.25 + i % 2 * 40 * u, x + 110 * u, bh * 0.25 + 140 * u + i % 2 * 40 * u], fill=(60, 44, 36))
+        d.rectangle([x + 12 * u, bh * 0.25 + 12 * u + i % 2 * 40 * u, x + 98 * u, bh * 0.25 + 128 * u + i % 2 * 40 * u], fill=col)
+    # couch
+    cx0, cy0 = bw * 0.52, floor - 170 * u
+    couch = (60, 110, 150) if not night else (40, 70, 100)
+    d.rounded_rectangle([cx0, cy0, cx0 + 520 * u, cy0 + 150 * u], radius=int(40 * u), fill=couch)
+    d.rounded_rectangle([cx0 - 30 * u, cy0 + 60 * u, cx0 + 550 * u, cy0 + 200 * u], radius=int(40 * u), fill=_lerp(couch, (255, 255, 255), 0.12))
+    # floor lamp
+    lx = bw * 0.94
+    d.line([(lx, floor + 20 * u), (lx, floor - 360 * u)], fill=(40, 36, 40), width=int(8 * u))
+    d.polygon([(lx - 70 * u, floor - 330 * u), (lx + 70 * u, floor - 330 * u), (lx + 45 * u, floor - 420 * u), (lx - 45 * u, floor - 420 * u)], fill=(250, 220, 160))
+    if night:
+        _glow(img, lx, floor - 300 * u, 360 * u, (255, 200, 120), 110)
+    return img
+
+
+def _clinic(bw, bh):
+    u = min(bw, bh) / 1000
+    img = _gradient((bw, bh), (200, 228, 222), (226, 242, 238))
+    d = ImageDraw.Draw(img)
+    floor = bh * 0.62
+    d.rectangle([0, floor, bw, bh], fill=(196, 204, 212))
+    for k in range(0, int(bw), int(140 * u)):
+        d.line([(k, floor), (k, bh)], fill=(180, 188, 198), width=int(3 * u))
+    for k in range(int(floor), int(bh), int(90 * u)):
+        d.line([(0, k), (bw, k)], fill=(180, 188, 198), width=int(3 * u))
+    # window with blinds
+    wx0, wy0, ww, wh = bw * 0.08, bh * 0.18, 340 * u, 300 * u
+    d.rectangle([wx0, wy0, wx0 + ww, wy0 + wh], fill=(170, 210, 240))
+    for k in range(12):
+        y = wy0 + k * wh / 12
+        d.rectangle([wx0, y, wx0 + ww, y + wh / 24], fill=(236, 240, 244))
+    # x-ray light box
+    bx = bw * 0.58
+    d.rectangle([bx, bh * 0.2, bx + 260 * u, bh * 0.2 + 300 * u], fill=(40, 46, 60))
+    d.rectangle([bx + 14 * u, bh * 0.2 + 14 * u, bx + 246 * u, bh * 0.2 + 286 * u], fill=(150, 190, 220))
+    for k in range(6):  # ribs
+        y = bh * 0.2 + 70 * u + k * 30 * u
+        d.arc([bx + 40 * u, y - 20 * u, bx + 220 * u, y + 40 * u], 200, 340, fill=(240, 248, 255), width=int(8 * u))
+    d.line([(bx + 130 * u, bh * 0.2 + 50 * u), (bx + 130 * u, bh * 0.2 + 260 * u)], fill=(240, 248, 255), width=int(10 * u))
+    # wall clock
+    ccx, ccy, r = bw * 0.86, bh * 0.24, 70 * u
+    d.ellipse([ccx - r, ccy - r, ccx + r, ccy + r], fill=(255, 255, 255), outline=(50, 56, 70), width=int(8 * u))
+    d.line([(ccx, ccy), (ccx, ccy - r * 0.7)], fill=(50, 56, 70), width=int(6 * u))
+    d.line([(ccx, ccy), (ccx + r * 0.5, ccy)], fill=(50, 56, 70), width=int(6 * u))
+    # desk
+    d.rectangle([bw * 0.6, floor - 120 * u, bw * 0.98, floor - 90 * u], fill=(140, 110, 84))
+    d.rectangle([bw * 0.62, floor - 90 * u, bw * 0.64, floor + 40 * u], fill=(120, 94, 72))
+    d.rectangle([bw * 0.94, floor - 90 * u, bw * 0.96, floor + 40 * u], fill=(120, 94, 72))
+    return img
+
+
+def _rooftop(bw, bh):
+    u = min(bw, bh) / 1000
+    img = _gradient((bw, bh), (44, 40, 96), (255, 170, 110))
+    horizon = bh * 0.56
+    _glow(img, bw * 0.5, horizon, 420 * u, (255, 220, 150), 170)
+    d = ImageDraw.Draw(img)
+    d.ellipse([bw * 0.5 - 120 * u, horizon - 120 * u, bw * 0.5 + 120 * u, horizon + 120 * u], fill=(255, 236, 180))
+    _skyline(d, bw, horizon + 40 * u, (60, 44, 80), windows=(255, 200, 120), seed=9)
+    d.rectangle([0, bh * 0.62, bw, bh], fill=(70, 66, 80))
+    d.rectangle([0, bh * 0.62, bw, bh * 0.62 + 26 * u], fill=(110, 104, 118))
+    for k in range(5):  # roof vents
+        x = bw * (0.1 + k * 0.22)
+        d.rectangle([x, bh * 0.66, x + 50 * u, bh * 0.66 + 70 * u], fill=(90, 86, 100))
+    return img
+
+
+def _street(bw, bh):
+    u = min(bw, bh) / 1000
+    img = _gradient((bw, bh), (8, 10, 26), (30, 30, 60))
+    d = ImageDraw.Draw(img)
+    rnd = random.Random(12)
+    for _ in range(120):
+        x, y = rnd.uniform(0, bw), rnd.uniform(0, bh * 0.3)
+        d.ellipse([x - 2 * u, y - 2 * u, x + 2 * u, y + 2 * u], fill=(220, 226, 255))
+    _skyline(d, bw, bh * 0.62, (24, 26, 46), windows=(255, 210, 120), seed=3)
+    d.rectangle([0, bh * 0.62, bw, bh], fill=(36, 36, 44))
+    d.rectangle([0, bh * 0.62, bw, bh * 0.66], fill=(70, 70, 80))
+    for k in range(0, int(bw), int(220 * u)):
+        d.rectangle([k, bh * 0.8, k + 110 * u, bh * 0.81], fill=(230, 210, 120))
+    for x in (bw * 0.15, bw * 0.55, bw * 0.9):  # street lamps
+        d.line([(x, bh * 0.64), (x, bh * 0.34)], fill=(20, 20, 26), width=int(10 * u))
+        d.ellipse([x - 22 * u, bh * 0.34 - 22 * u, x + 22 * u, bh * 0.34 + 22 * u], fill=(255, 230, 170))
+        _glow(img, x, bh * 0.36, 260 * u, (255, 200, 120), 90)
+        d = ImageDraw.Draw(img)
     return img
